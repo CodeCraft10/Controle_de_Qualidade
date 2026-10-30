@@ -1,0 +1,4 @@
+package-lock.json
+.local/
+node_modules/
+uploads/
