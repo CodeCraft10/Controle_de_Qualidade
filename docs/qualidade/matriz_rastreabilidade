@@ -1,0 +1,17 @@
+# Matriz de Rastreabilidade
+
+| ID | Requisito | Caso de teste | Situação |
+|---|---|---|---|
+| RF01 | Autenticação de usuários | CT001, CT002 | Pendente |
+| RF02 | Cadastro de produtos | CT003 | Pendente |
+| RF03 | Cadastro de lotes | A definir | Pendente |
+| RF04 | Registro de inspeções | A definir | Pendente |
+| RF05 | Registro de não conformidades | A definir | Pendente |
+| RF06 | Geração de relatórios | A definir | Pendente |
+
+## Legenda
+
+- Pendente: ainda não testado.
+- Aprovado: teste realizado com sucesso.
+- Reprovado: teste apresentou resultado diferente do esperado.
+- Não aplicável: requisito não faz parte da versão avaliada.
