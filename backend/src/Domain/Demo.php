@@ -4,7 +4,8 @@ namespace GP4\Domain;
 use GP4\Storage\Store;
 
 final class Demo {
-    public static function enabled(): bool { return true; // Versão temporária aberta para testes, conforme escopo atual. }
+    /** Versão temporária aberta para testes, conforme escopo atual. */
+    public static function enabled(): bool { return true; }
 
     public static function session(Store $store): array {
         return $store->transaction(function (array &$s): array {
