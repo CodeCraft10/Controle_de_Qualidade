@@ -107,5 +107,6 @@ não para volume industrial, múltiplos servidores ou filesystem de rede. As fot
 ocupam aproximadamente 33% a mais por causa do base64. Pare a API antes de copiar
 `var/state.json` para backup/restauração; trate a cópia como dado privado.
 
-A integração relacional exigida no projeto completo permanece pendente por escopo
-desta entrega, conforme o pedido de desenvolver sem banco e frontend.
+A integração relacional exigida no projeto completo permanece pendente. O frontend
+já está conectado à API PHP; a instalação integrada usa o Dockerfile da raiz,
+e não o Dockerfile de API isolada desta pasta.

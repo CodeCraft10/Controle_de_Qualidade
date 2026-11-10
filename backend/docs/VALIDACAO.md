@@ -42,9 +42,10 @@ Workflow `.github/workflows/frontend.yml`:
   persistente, bootstrap de administrador e recriação do contêiner.
 
 A [execução de integração](https://github.com/CodeCraft10/Controle_de_Qualidade/actions/runs/42883311393)
-aprovou os quatro jobs, incluindo imagem Apache e frontend no navegador. O smoke do
-volume após recriação foi acrescentado em seguida e será verificado novamente na
-execução final desta branch. O histórico das execuções fica no GitHub Actions.
+aprovou os quatro jobs, incluindo imagem Apache e frontend no navegador. A versão
+atual do smoke também testa a preservação de dados após recriar o contêiner. As
+[execuções da integração](https://github.com/CodeCraft10/Controle_de_Qualidade/actions?query=branch%3Afeat%2Fintegracao-php-frontend)
+registram os resultados atualizados.
 
 A imagem Apache é validada no runner do GitHub porque este ambiente local tem
 pouco espaço de disco. Os testes de navegador e API foram executados localmente
