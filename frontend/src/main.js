@@ -5,13 +5,20 @@ import '@fontsource/inter/700.css';
 import './styles.css';
 import { api } from './api.js';
 import { getUser, canManage, setSession, clearSession } from './session.js';
-import { esc, loading } from './ui.js';
+import { esc, loading, notify } from './ui.js';
 import { mountCatalog } from './pages/catalog.js';
 import { mountInspections } from './pages/inspections.js';
 import { mountNonconformities } from './pages/nonconformities.js';
 import { mountDashboard, mountHistory } from './pages/reporting.js';
 
 const app = document.querySelector('#app');
+let demoSessionPromise;
+async function tryDemoSession() {
+  demoSessionPromise ??= api.request('/config').then(async (config) => {
+    if (config.demo_mode) setSession(await api.request('/auth/demo', { method: 'POST' }));
+  });
+  await demoSessionPromise;
+}
 const shield =
   '<svg viewBox="0 0 40 44" fill="none" aria-hidden="true"><path d="M20 3 35 9v12c0 10-15 20-15 20S5 31 5 21V9Z" stroke="currentColor" stroke-width="2.5"/><path d="m12 21 6 6 11-13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const paths = {
@@ -51,9 +58,9 @@ function shell(current) {
     </aside>
     <button class="nav-backdrop" aria-label="Fechar navegação" tabindex="-1"></button>
     <div class="main-shell"><header class="topbar"><div class="topbar-start"><button class="icon-button mobile-menu" aria-controls="navigation" aria-expanded="false" aria-label="Abrir navegação">${icon('M4 6h16 M4 12h16 M4 18h16')}</button><span class="breadcrumb">Workspace <span>/</span> <strong>${esc(paths[current]?.[0] || 'Navegação')}</strong></span></div>
-      <div class="user-menu"><span class="avatar" aria-hidden="true">${esc(user.nome.slice(0, 2).toUpperCase())}</span><span class="user-info"><strong>${esc(user.nome)}</strong><small>${esc({ admin: 'Administrador', supervisor: 'Supervisor', inspetor: 'Inspetor' }[user.perfil])}</small></span><button class="logout-button" id="logout">Sair ${icon('M9 3H4v18h5 M14 8l5 4-5 4 M8 12h11')}</button></div>
-    </header><main id="main-content" tabindex="-1"></main><footer class="main-footer"><span>GP4 · Sistema Inteligente de Controle de Qualidade</span><span>Registro. Evidência. Confiança.</span></footer></div></div>`;
-  document.querySelector('#logout').addEventListener('click', async (event) => {
+      <div class="user-menu"><span class="avatar" aria-hidden="true">${esc(user.nome.slice(0, 2).toUpperCase())}</span><span class="user-info"><strong>${esc(user.nome)}</strong><small>${esc({ admin: 'Administrador', supervisor: 'Supervisor', inspetor: 'Inspetor' }[user.perfil])}</small></span>${user.demo ? '<span class="badge">Modo demonstração</span>' : `<button class="logout-button" id="logout">Sair ${icon('M9 3H4v18h5 M14 8l5 4-5 4 M8 12h11')}</button>`}</div>
+    </header>${user.demo ? '<div class="notice" role="status" style="margin:16px 24px 0">Modo demonstração: acesso sem login. Use somente dados de teste.</div>' : ''}<main id="main-content" tabindex="-1"></main><footer class="main-footer"><span>GP4 · Sistema Inteligente de Controle de Qualidade</span><span>Registro. Evidência. Confiança.</span></footer></div></div>`;
+  document.querySelector('#logout')?.addEventListener('click', async (event) => {
     const currentPage = document.querySelector('#main-content');
     if (currentPage?.canLeave && !currentPage.canLeave()) return;
     event.currentTarget.disabled = true;
@@ -153,6 +160,14 @@ async function route() {
     .split('/')
     .filter(Boolean);
   if (!getUser()) {
+    try {
+      await tryDemoSession();
+    } catch (error) {
+      loginNotice = error.message;
+    }
+    if (currentGeneration !== generation) return;
+  }
+  if (!getUser()) {
     if (name !== 'login') {
       location.replace('#/login');
       return;
@@ -197,6 +212,7 @@ async function route() {
 window.addEventListener('hashchange', route);
 window.addEventListener('session-ended', (event) => {
   loginNotice = event.detail;
+  demoSessionPromise = undefined;
   if (location.hash === '#/login') route();
   else location.replace('#/login');
 });
