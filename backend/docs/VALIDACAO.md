@@ -1,78 +1,65 @@
-# Validação executada em 30/10/2026
+# Validação do backend PHP
 
-## Ambiente
+Data: 10/11/2026. Ambiente de testes: PHP CLI 8.4 em contêiner Linux;
+sem banco, frontend ou credenciais reais. Testes automatizados criam dados fictícios
+em diretórios temporários. PHP 8.2 é o mínimo declarado; esta execução usou 8.4.
 
-- Windows PowerShell; Node.js v22.8.0; npm.cmd 10.8.2.
-- PostgreSQL 17 real, iniciado em instância isolada em backend/.local/pgdata.
-- Banco gp4_dev em 127.0.0.1:55432.
-- Cada execução HTTP usa schema aleatório próprio e remove esse schema ao terminar.
-- Nenhum frontend ou esquema definitivo dos colegas estava disponível.
+## Resultados executados
 
-## Resultados reais
+| Verificação | Resultado |
+|---|---|
+| `php -l` em todos os fontes PHP da implementação inicial | Sem erros de sintaxe |
+| `php tests/run.php` | 69 verificações passaram |
+| `php tests/http.php` | 44 verificações HTTP passaram |
+| `php tests/concurrency.php` | 3 verificações de concorrência passaram |
+| Total das três suítes | 116 verificações passaram |
+| `git diff --check main...HEAD` | Sem erros |
+| Alterações em `frontend/` e `docs/qualidade/` | Nenhuma |
 
-| Comando/verificação            | Resultado                                                               |
-| ------------------------------ | ----------------------------------------------------------------------- |
-| Instalação de dependências     | Concluída; package-lock.json gerado                                     |
-| npm.cmd run db:migrate         | 001 e 002 aplicadas com sucesso no banco isolado                        |
-| Segunda execução das migrações | Sucesso, sem reaplicar arquivos registrados                             |
-| npm.cmd test                   | 37 testes contabilizados pelo Node; 37 aprovados, 0 falhas, 0 ignorados |
-| npm.cmd run smoke              | Servidor real iniciado; quatro verificações HTTP aprovadas              |
-| npm.cmd audit                  | Zero vulnerabilidades conhecidas na execução                            |
-| npm.cmd run format             | Arquivos padronizados com Prettier                                      |
+As três suítes completas foram executadas com o código montado em `/app` na
+imagem oficial `php:8.4-cli`. Não houve alterações no código PHP após essas
+execuções; os ajustes seguintes foram de empacotamento Docker e documentação.
 
-A contagem de 37 inclui 30 cenários HTTP, seis testes unitários e o teste que agrupa os cenários HTTP. A execução final levou aproximadamente 3,8 segundos. Não é um percentual de cobertura de linhas nem uma garantia de ausência de vulnerabilidades.
+## Cobertura observada
 
-## Cenários verificados
+- Login, hash, token armazenado como digest, expiração, logout, troca de senha,
+  conta inativa, limitação de tentativas e proteção do último administrador.
+- Separação de perfis e escopo por responsável, inclusive para listas e indicadores.
+- Cadastros, duplicidades, vínculos inválidos, datas impossíveis, checklist vazio,
+  critérios duplicados, preservação de histórico e desativação referencial.
+- Abertura de inspeção, snapshots, progresso, respostas, justificativa de não
+  aplicável, incompletude, exigência de desvio, aprovação, reprovação e finalização única.
+- Reversão de alterações após exceção e recusa de sobrescrever arquivo corrompido.
+- Transições de desvios e histórico; resolução não altera inspeção passada.
+- Servidor HTTP real, JSON inválido, Content-Type, limite de corpo e erros padronizados.
+- Foto PNG real enviada por multipart e recuperada byte a byte, metadados SHA-256,
+  arquivo com falso MIME, excesso de tamanho, tentativa anônima, outro responsável
+  e bloqueio de novo upload após finalização.
+- Filtros, paginação, ordenação permitida, métricas em 0%, 50% e 100%, CSV e
+  neutralização de fórmulas em campos textuais exportados.
+- Quatro processos concorrentes: 80 transações sem perda de gravação; uma
+  finalização confirmada e três recusadas; lote e inspeção mantidos consistentes.
+- Logs sem senha, token ou conteúdo da foto nos fluxos executados.
 
-- Saúde/prontidão, CORS e cabeçalhos de segurança.
-- Login, credenciais incorretas, token adulterado, expirado, emissor/público/algoritmo inválidos.
-- Autorização por perfil e responsável, acesso a evidência de outro inspetor bloqueado.
-- Senhas com hash, limite em bytes e revogação de sessões após atualização de conta.
-- Campos obrigatórios, JSON malformado, tipo inválido, IDs e ordenação.
-- Produtos, lotes, critérios, checklists, itens e usuários; duplicidades e relacionamentos.
-- Produto/critérios inativos e checklist vazio bloqueiam uso.
-- Duas aberturas simultâneas: exatamente uma aceita e uma bloqueada.
-- Critérios apresentados com cópia histórica e progresso.
-- Finalização incompleta, resposta inválida e não conformidade faltante bloqueadas.
-- Foto válida persistida e recuperada byte a byte; MIME/assinatura/campo/tamanho inválidos rejeitados.
-- Falha induzida de SQL após gravar foto: arquivo removido e metadados desfeitos.
-- Falha induzida ao atualizar lote: finalização da inspeção também desfeita.
-- Duas finalizações simultâneas: exatamente uma aceita e uma bloqueada.
-- Inspeção finalizada bloqueia resposta/anexo; resultado do lote coerente.
-- Desvio segue aberta → em_tratamento → resolvida com histórico.
-- Fluxos de aprovação e reprovação, filtros, paginação, indicadores e CSV.
-- Fórmulas de planilha neutralizadas no CSV.
-- Transação com FK inválida desfeita no PostgreSQL.
-- Logs sem corpo, senha, token ou parâmetros de URL.
-- Limites de corpo JSON e tentativas de login.
+## Empacotamento Docker e limite do ambiente
 
-Os testes induzem dois erros de SQL para conferir rollback/compensação. Por isso aparecem duas linhas de falha_interna no terminal durante uma execução bem-sucedida. Os logs não incluem o SQL nem os dados enviados.
+A construção do Dockerfile final foi concluída. Foi corrigido o acesso do usuário
+`www-data` aos fontes por `COPY --chown`, mantendo a execução sem root.
+A suíte de 69 verificações também passou dentro da imagem da aplicação.
 
-## Inicialização em processo separado
+O ambiente usa o driver VFS e atingiu o limite de disco durante tentativas de
+repetir todas as suítes na imagem empacotada. Para a última construção, o filesystem
+da imagem PHP Alpine foi exportado/reimportado localmente em uma camada, preservando
+os binários, para reduzir uso de espaço. Essa adaptação é apenas do ambiente de
+validação; o Dockerfile versionado referencia a imagem oficial PHP Alpine.
+A repetição completa das suítes na imagem final ficou limitada por `no space left
+on device`. Isso não substitui nem invalida a execução completa anterior com os
+mesmos fontes; o limite é registrado para permitir reproduzir a validação em máquina
+com mais espaço. Nenhum banco ou frontend foi usado nas verificações.
 
-npm.cmd run smoke iniciou src/server.js em porta livre temporária e fez requisições de rede:
+## Pendências reais de integração
 
-```text
-API disponível em http://localhost:54929
-GET /api/saude → 200
-GET /api/prontidao → 200
-GET /api/produtos → 401
-GET /api/openapi.json → 200
-```
-
-O processo da API foi encerrado ao fim da verificação. O PostgreSQL isolado permanece disponível; a API pode ser iniciada com npm.cmd start na pasta backend.
-
-## Problemas encontrados e corrigidos
-
-Na primeira suíte, o tratamento genérico do Multer substituía 413 por 400 e o download bloqueava o caminho privado de testes por conter .local. Ambos foram corrigidos e os cenários passaram. Um payload de SQL injection foi ajustado para passar pela validação de formato do email e testar efetivamente a consulta parametrizada.
-
-O teste adicional de falha na finalização também teve sua função SQL de teste corrigida antes da execução final aprovada.
-
-## O que não foi integrado
-
-- Telas, formulários e dashboard do João.
-- Modelagem definitiva e conexão compartilhada do Luiz.
-- Hospedagem pública e armazenamento definitivo.
-- Homologação independente de Felipe.
-
-A validação comprovou API ↔ PostgreSQL local e API ↔ arquivos privados, com HTTP real. Não comprovou o produto completo com interface dos colegas.
+PostgreSQL, compatibilidade com frontend, homologação independente da equipe,
+implantação e confirmação das regras propostas continuam fora desta entrega.
+Os comandos reproduzíveis estão no README. O histórico antigo de testes Node.js
+não é usado como evidência da implementação PHP.
