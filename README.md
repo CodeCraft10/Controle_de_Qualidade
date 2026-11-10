@@ -4,7 +4,7 @@
 
 ### Problema
 O controle de qualidade é realizado por meio de registros manuais e planilhas, tornando o processo lento, suscetível a erros humanos e com baixa rastreabilidade das inspeções. 
-A ausência de um sistema centralizado dificulta a identificação das causas raiz dos defeitos, compromete a análise de indicadores e aumenta o risco de envio de produtos não conformes ao cliente.
+A ausência de um sistema centralizado dificulta a identificação das causas raiz dos defeitos, compromete a análise de indicadores e aumenta o risco de envio de produtos não conformes ao cliente..
 
 ### Objetivo
 Desenvolver uma solução digital centralizada para gerenciamento completo do controle de qualidade, permitindo o registro ágil de inspeções, rastreabilidade de lotes, 
