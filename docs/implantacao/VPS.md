@@ -181,3 +181,45 @@ python3 tests/entrypoint.py --docker-image gp4-integrado
 O smoke cria um contêiner descartável com porta aleatória, uma conta sintética e
 verifica login, cadastro, logout, assets e bloqueio de arquivos privados. Os testes
 de navegador usam estado temporário e não acessam o volume da sua VPS.
+
+## Testar sem preencher o login
+
+O modo demonstração abre o painel automaticamente como administrador de teste.
+Ele fica **desligado por padrão**. Para ativar na hospedagem PHP/Nginx existente:
+
+```sh
+cd /home/codecraft/www
+git pull origin main
+(cd frontend && npm run build)
+php backend/bin/demo.php on
+```
+
+Recarregue `https://codecraft.devlook.xyz/`. Não é preciso criar conta. Um aviso
+identifica a demonstração. Enquanto estiver ligada, qualquer pessoa que acessar
+o domínio poderá usar as funções de teste; use somente dados fictícios.
+
+Para voltar a exigir login:
+
+```sh
+php backend/bin/demo.php off
+```
+
+Recarregue a página. Tokens da demonstração são recusados após desligá-la. A
+conta normal, se ainda não existir, pode ser criada pelo `create-admin.php` quando
+a demonstração estiver desligada.
+
+A configuração fica em `backend/.env`, ignorado pelo Git; o comando preserva
+as outras variáveis. Uma variável `DEMO_MODE` definida no ambiente do servidor tem
+prioridade sobre esse arquivo. O frontend precisa ser recompilado nesta atualização
+porque a entrada automática foi adicionada à interface; alternar on/off depois
+não exige recompilar nem reiniciar o Nginx.
+
+Dados e contas de demonstração usam um arquivo separado, com sufixo `.demo.json`,
+e não alteram os registros normais. Ao desligar, a API volta ao armazenamento
+normal; os dados de teste continuam guardados para uma próxima demonstração.
+O modo não fornece senha compartilhada nem remove a autenticação do código.
+
+Em Docker Compose, defina `DEMO_MODE=true` no `.env` da raiz e execute
+`docker compose up -d`; para restaurar, use `DEMO_MODE=false` e repita o comando.
+O volume persistente contém os dois estados separados. Não use o comando de
+edição de arquivo dentro do contêiner para configurar o Compose.

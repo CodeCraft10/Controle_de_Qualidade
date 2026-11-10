@@ -35,3 +35,12 @@ Os testes incluem fluxo completo, permissões, celular, fotos, CSV e revogação
 
 Tokens ficam somente em memória; recarregar a página exige entrar novamente.
 Logout revoga o token no servidor. Os perfis são verificados também na API.
+
+## Demonstração
+
+O servidor pode habilitar entrada automática sem preencher o login. A interface
+consulta `/api/config`, obtém uma sessão de teste e mostra um aviso no painel.
+Consulte [como ligar e desligar](../docs/implantacao/VPS.md#testar-sem-preencher-o-login).
+
+Para executar os testes desse modo: `E2E_DEMO=1 npm test`. A fixture usa estado
+separado e não cria contas nem modifica dados da VPS.

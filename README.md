@@ -59,6 +59,12 @@ disponibiliza visões analíticas em tempo real, mantendo histórico seguro e au
 
 ## ▶️ Executar o sistema
 
+Para testar **sem preencher o login**, atualize o projeto, compile o frontend e
+execute `php backend/bin/demo.php on`. Para restaurar o login, use
+`php backend/bin/demo.php off`. Veja os comandos no [guia da VPS](docs/implantacao/VPS.md#testar-sem-preencher-o-login).
+A demonstração usa dados separados e fica desligada por padrão.
+
+
 **VPS já configurada com a raiz deste projeto:** o `index.php` da raiz abre a aplicação
 na homepage. Com o frontend já compilado, execute `git pull origin main` e abra seu
 domínio. Não é preciso criar uma conta para exibir a tela inicial. A autenticação
