@@ -97,4 +97,4 @@ Indicadores: total, aprovadas, reprovadas, em_andamento, finalizadas, nao_confor
 
 ## Situação
 
-Contrato preparado e testado via HTTP. Integração com o frontend real permanece pendente porque os arquivos de João não estão no repositório.
+Contrato implementado no frontend em [`../../frontend`](../../frontend/README.md). Os testes de navegador iniciam esta API com PostgreSQL real em schema isolado; os cenários e resultados estão em [`../../frontend/docs/VALIDACAO.md`](../../frontend/docs/VALIDACAO.md). A homologação com a equipe e o banco definitivo continua sendo uma etapa própria.

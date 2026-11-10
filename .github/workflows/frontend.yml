@@ -1,0 +1,52 @@
+name: Frontend e integração
+
+on:
+  pull_request:
+    paths: ['frontend/**', 'backend/**', '.github/workflows/frontend.yml']
+  push:
+    branches: [main]
+    paths: ['frontend/**', 'backend/**', '.github/workflows/frontend.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: gp4_ci
+          POSTGRES_PASSWORD: ephemeral-ci-only
+          POSTGRES_DB: gp4_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U gp4_ci -d gp4_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      # Disposable local CI service, never a shared database or production credential.
+      TEST_DATABASE_URL: postgresql://gp4_ci:ephemeral-ci-only@localhost:5432/gp4_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+      - run: npm ci
+        working-directory: backend
+      - run: npm ci
+        working-directory: frontend
+      - run: npm test
+        working-directory: backend
+      - run: npm run build
+        working-directory: frontend
+      - run: npm run format:check
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: npm test
+        working-directory: frontend

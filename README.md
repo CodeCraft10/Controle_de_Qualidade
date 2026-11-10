@@ -44,17 +44,37 @@ disponibiliza visões analíticas em tempo real, mantendo histórico seguro e au
 - Nome: GP4 | Controle de Qualidade
 - Símbolo: Escudo com check centralizado (✔️)
 - Cor principal: Azul-Marinho (#142D4E)
-- Cor secundária: Azul (#25663EB)
+- Cor secundária: Azul (#2563EB)
 - Tipografia: Inter Bold (700)
 - Estilo: Minimalista, moderno e profissional
 - Versões: Horizontal, ícone e monocromático
 
 ## 🛠️ Tecnologias
-- HTML5 / CSS3 / JavaScript
-- [Backend: Node.js / Python / Java / PHP]
-- [Banco de Dados Relacional: PostgreSQL / MySQL]
+- Frontend: HTML5 / CSS3 / JavaScript, Vite
+- Backend: Node.js / Express
+- Banco de Dados Relacional: PostgreSQL
 - Git / GitHub
 - [Ferramenta de Gestão: Trello / Jira / GitHub Projects]
+
+## ▶️ Executar o sistema
+
+O projeto está organizado em duas aplicações:
+
+- [Backend](backend/README.md): configuração do PostgreSQL, migrações, criação da primeira conta e API em `http://localhost:3000/api`.
+- [Frontend](frontend/README.md): interface web em `http://localhost:5173`, configuração, testes e manual de uso.
+
+Depois de iniciar a API conforme o guia do backend, execute em outro terminal:
+
+```sh
+cd frontend
+npm ci
+cp .env.example .env
+npm run dev
+```
+
+No PowerShell, substitua `cp` por `Copy-Item` e use `npm.cmd` caso a política de execução bloqueie `npm.ps1`. Não há usuário ou senha padrão: utilize uma conta criada no backend.
+
+A implementação do frontend corresponde às atividades F01–F07 do plano individual do João. As [rotas e os esboços](frontend/docs/ROTAS_E_TELAS.md), o [padrão visual](frontend/docs/DESIGN_SYSTEM.md) e a [matriz de validação](frontend/docs/VALIDACAO.md) registram as decisões e evidências. A cor azul foi normalizada de `#25663EB`, que não é um hexadecimal CSS válido, para `#2563EB`.
 
 ## 👥 Equipe
 - Pedro Peruzzo
