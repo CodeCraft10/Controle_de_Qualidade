@@ -59,35 +59,23 @@ disponibiliza visões analíticas em tempo real, mantendo histórico seguro e au
 
 ## ▶️ Executar o sistema
 
-Para testar **sem preencher o login**, atualize o projeto, compile o frontend e
-execute `php backend/bin/demo.php on`. Para restaurar o login, use
-`php backend/bin/demo.php off`. Veja os comandos no [guia da VPS](docs/implantacao/VPS.md#testar-sem-preencher-o-login).
-A demonstração usa dados separados e fica desligada por padrão.
+**Versão temporária sem tela de login:** o site abre direto no painel, com dados
+compartilhados de teste. Use somente dados fictícios. A tela de autenticação
+poderá ser criada novamente em uma etapa futura.
 
-
-**VPS já configurada com a raiz deste projeto:** o `index.php` da raiz abre a aplicação
-na homepage. Com o frontend já compilado, execute `git pull origin main` e abra seu
-domínio. Não é preciso criar uma conta para exibir a tela inicial. A autenticação
-continua protegendo as funções internas. Veja o [guia da VPS](docs/implantacao/VPS.md).
-
-
-A aplicação está integrada: `public/index.php` entrega a interface e encaminha `/api` ao backend PHP, usando uma única URL.
-
-Siga o [guia de instalação na VPS](docs/implantacao/VPS.md) para compilar, iniciar e criar a primeira conta. Com Docker Compose:
+Na VPS já configurada:
 
 ```sh
-cp .env.example .env
-# Edite APP_BIND=0.0.0.0 em .env para abrir pelo IP da VPS privada.
-docker compose up -d --build
-docker compose exec --user www-data app php backend/bin/create-admin.php
+cd /home/codecraft/www
+git pull origin main
 ```
 
-Acesse `http://IP_DA_VPS:8080/` após configurar a interface de escuta e o firewall. Não há senha padrão. O guia também cobre execução local, Nginx/PHP-FPM, backups e testes.
+Abra `https://codecraft.devlook.xyz/`. O `index.php` da raiz serve a interface pronta
+em `web/` e a API PHP. Não precisa criar conta, ativar modo ou recompilar na VPS.
 
-- [Backend](backend/README.md): API, regras, armazenamento e testes PHP.
-- [Frontend](frontend/README.md): interface integrada e testes de navegador.
-
-A persistência permanece em JSON local privado, em volume persistente na instalação Docker. PostgreSQL é uma integração futura.
+Consulte o [guia de implantação](docs/implantacao/VPS.md) para Docker, persistência,
+execução local e desenvolvimento. Os dados normais anteriores são preservados;
+esta versão usa o armazenamento de teste separado.
 
 A implementação do frontend corresponde às atividades F01–F07 do plano individual do João. As [rotas e os esboços](frontend/docs/ROTAS_E_TELAS.md), o [padrão visual](frontend/docs/DESIGN_SYSTEM.md) e a [matriz de validação](frontend/docs/VALIDACAO.md) registram as decisões e evidências. A cor azul foi normalizada de `#25663EB`, que não é um hexadecimal CSS válido, para `#2563EB`.
 

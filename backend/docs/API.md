@@ -169,15 +169,14 @@ Indicadores incluem `finalizadas` e `nao_conformidades` no escopo dos filtros e
 da autorização. Fotos também incluem `nome_original` sanitizado para exibição;
 o caminho de acesso continua `/evidencias/{id}`, autenticado.
 
-## Demonstração opcional
+## Entrada automática da versão de testes
 
-- `GET /config` é público e retorna `{demo_mode:false}` por padrão.
-- `POST /auth/demo` retorna 404 com o modo desligado. Com `DEMO_MODE=true`, cria
-  uma sessão temporária de administrador de teste, sem pedir credenciais, com
-  `usuario.demo=true`, token opaco e validade de uma hora.
-- As outras rotas continuam validando Bearer e regras de negócio. A interface
-  obtém a sessão automaticamente somente quando a configuração do servidor permite.
-- Dados demo ficam isolados em outro arquivo. Desligar o modo invalida os tokens
-  demo e restaura o acesso normal aos dados reais.
+A tela de login foi removida. `POST /auth/demo` sempre fornece uma sessão de
+administrador de teste sem credenciais; `GET /config` informa `demo_mode:true`.
+A API continua validando os tokens temporários e as regras de negócio. A interface
+obtém a sessão automaticamente e não mostra formulário de email/senha.
 
-Para ativar/desativar na VPS nativa: `php backend/bin/demo.php on|off`.
+Os dados ficam no arquivo de testes separado. A variável antiga `DEMO_MODE` não
+controla mais a entrada e o comando `demo.php on/off` foi removido. Esta versão é
+aberta a qualquer visitante para testes com dados fictícios. Serviços de login
+por credenciais ainda existem na API, mas não há página de login nesta interface.
