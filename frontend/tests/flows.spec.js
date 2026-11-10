@@ -8,13 +8,9 @@ test.beforeAll(async () => {
   fixture = JSON.parse(await readFile(new URL('../.e2e/session.json', import.meta.url), 'utf8'));
 });
 
-async function login(page, role = 'admin') {
-  await page.goto('/#/login');
-  await page.getByLabel('E-mail', { exact: true }).fill(fixture.accounts[role].email);
-  await page.getByLabel('Senha', { exact: true }).fill(fixture.accounts[role].password);
-  await page.locator('form button[type="submit"]').click();
-  await expect(page).toHaveURL(/#\/dashboard$/);
-  await expect(page.locator('h1')).toContainText(/Visão geral|Dashboard/);
+async function openPanel(page) {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Visão geral', exact: true })).toBeVisible();
 }
 
 async function route(page, routeName, heading) {
@@ -97,32 +93,11 @@ async function seedInspection(request, suffix, owner = 'inspetor') {
   return { inspection, lot, checklist, item, product, asOwner, admin };
 }
 
-test('login inválido, sessão em memória, logout e proteção de rota', async ({ page }) => {
-  await page.goto('/#/produtos');
-  await expect(page.getByLabel('E-mail', { exact: true })).toBeVisible();
-  await screenshot(page, 'login-desktop.png');
-  await page.getByLabel('E-mail', { exact: true }).fill(fixture.accounts.admin.email);
-  await page.getByLabel('Senha', { exact: true }).fill('senha-incorreta-123');
-  await page.locator('form button[type="submit"]').click();
-  await expect(page.getByRole('alert')).toContainText('Credenciais inválidas');
-  await login(page);
-  expect(
-    await page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } })),
-  ).toEqual({ local: {}, session: {} });
-  await page.getByRole('button', { name: 'Sair', exact: true }).click();
-  await expect(page.getByLabel('E-mail', { exact: true })).toBeVisible();
-  await route(page, 'produtos');
-  await expect(page.getByLabel('E-mail', { exact: true })).toBeVisible();
-  await login(page);
-  await page.reload();
-  await expect(page.getByLabel('E-mail', { exact: true })).toBeVisible();
-});
-
 test('fluxo completo persiste cadastros, inspeção, desvio, foto, histórico e relatório', async ({
   page,
   request,
 }) => {
-  await login(page);
+  await openPanel(page);
   const productId = await createCatalog(page, 'produtos', 'produto', {
     codigo: 'P-E2E-001',
     nome: 'Peça de controle E2E',
@@ -285,47 +260,10 @@ test('fluxo completo persiste cadastros, inspeção, desvio, foto, histórico e 
   expect(exportedText).toContain('reprovada');
 });
 
-test('perfis respeitam cadastros, usuários e autoria da inspeção', async ({ page, request }) => {
-  const seeded = await seedInspection(request, 'PERMISSOES');
-  await login(page, 'supervisor');
-  await route(page, 'produtos', 'Produtos');
-  await expect(page.getByRole('button', { name: '+ Novo produto', exact: true })).toBeVisible();
-  await route(page, 'inspetores', 'Inspetores');
-  await expect(page.getByRole('button', { name: '+ Novo inspetor', exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Sair', exact: true }).click();
-  await login(page, 'inspetor');
-  await route(page, 'produtos', 'Produtos');
-  await expect(page.getByRole('button', { name: '+ Novo produto', exact: true })).toHaveCount(0);
-  await route(page, 'inspetores');
-  await expect(page.getByRole('heading', { name: 'Acesso negado', exact: true })).toBeVisible();
-  await route(page, `inspecoes/${seeded.inspection.id}`);
-  await page.getByLabel('Resultado', { exact: true }).selectOption('nao_aplicavel');
-  await page.getByRole('button', { name: 'Salvar resposta', exact: true }).click();
-  expect(
-    await page
-      .getByLabel('Observação', { exact: true })
-      .evaluate((element) => element.validity.valueMissing),
-  ).toBe(true);
-  await page.getByLabel('Observação', { exact: true }).fill('Critério não aplicável neste ensaio.');
-  await page.getByRole('button', { name: 'Salvar progresso', exact: true }).click();
-  await expect(page.getByText('1 de 1 itens salvos')).toBeVisible();
-  await page.getByRole('button', { name: 'Sair', exact: true }).click();
-  await login(page, 'outro');
-  await route(page, `inspecoes/${seeded.inspection.id}`);
-  await expect(page.getByText('Inspeção de outro inspetor', { exact: false })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Salvar resposta', exact: true })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Revisar conclusão', exact: true })).toHaveCount(0);
-  expect(
-    (await seeded.asOwner('POST', '/produtos', { codigo: 'NAO', nome: 'Proibido' })).status(),
-  ).toBe(403);
-  const supervisor = await api(request, 'supervisor');
-  expect((await supervisor('POST', '/usuarios', {})).status()).toBe(403);
-});
-
 test('layout de celular, navegação e estados de erro recuperáveis', async ({ page, request }) => {
   await seedInspection(request, 'MOBILE');
   await page.setViewportSize({ width: 390, height: 844 });
-  await login(page, 'inspetor');
+  await openPanel(page);
   await screenshot(page, 'dashboard-mobile.png');
   const overflow = await page.evaluate(() =>
     [...document.querySelectorAll('body *')]
@@ -363,30 +301,4 @@ test('layout de celular, navegação e estados de erro recuperáveis', async ({ 
   await page.unroute('**/api/produtos?**');
   await page.getByRole('button', { name: 'Tentar novamente', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Registros', exact: true })).toBeVisible();
-});
-
-test('respostas não salvas exigem confirmação e sessão revogada exige novo login', async ({
-  page,
-  request,
-}) => {
-  const seeded = await seedInspection(request, 'SESSAO', 'outro');
-  await login(page, 'outro');
-  await route(page, `inspecoes/${seeded.inspection.id}`);
-  await page.getByLabel('Resultado', { exact: true }).selectOption('conforme');
-  page.once('dialog', (dialog) => dialog.dismiss());
-  await page.getByRole('link', { name: 'Produtos', exact: true }).click();
-  await expect(page).toHaveURL(new RegExp(`#/inspecoes/${seeded.inspection.id}$`));
-  await expect(page.getByLabel('Resultado', { exact: true })).toHaveValue('conforme');
-  page.once('dialog', (dialog) => dialog.accept());
-  await page.getByRole('link', { name: 'Produtos', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Produtos', exact: true })).toBeVisible();
-  const revoke = await seeded.admin('PATCH', `/usuarios/${fixture.accounts.outro.id}`, {
-    nome: 'Conta de teste revisada',
-  });
-  expect(revoke.status()).toBe(200);
-  await route(page, 'dashboard');
-  await expect(page.getByLabel('E-mail', { exact: true })).toBeVisible();
-  await expect(page.locator('.login-panel [role="status"]')).toContainText(
-    'Sua sessão expirou ou foi revogada',
-  );
 });

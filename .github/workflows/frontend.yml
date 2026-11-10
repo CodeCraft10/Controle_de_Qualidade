@@ -3,10 +3,10 @@ name: Backend PHP e frontend
 on:
   workflow_dispatch:
   pull_request:
-    paths: ['frontend/**', 'backend/**', 'public/**', 'deploy/**', 'tests/**', 'Dockerfile', 'index.php', '.dockerignore', 'compose.yaml', '.github/workflows/frontend.yml']
+    paths: ['frontend/**', 'backend/**', 'public/**', 'deploy/**', 'tests/**', 'web/**', 'Dockerfile', 'index.php', '.dockerignore', 'compose.yaml', '.github/workflows/frontend.yml']
   push:
     branches: [main]
-    paths: ['frontend/**', 'backend/**', 'public/**', 'deploy/**', 'tests/**', 'Dockerfile', 'index.php', '.dockerignore', 'compose.yaml', '.github/workflows/frontend.yml']
+    paths: ['frontend/**', 'backend/**', 'public/**', 'deploy/**', 'tests/**', 'web/**', 'Dockerfile', 'index.php', '.dockerignore', 'compose.yaml', '.github/workflows/frontend.yml']
 
 permissions:
   contents: read
@@ -36,7 +36,7 @@ jobs:
         run: php tests/run.php
       - name: Testar API HTTP e fotos
         run: php tests/http.php
-      - name: Testar modo demonstração e retorno ao login
+      - name: Testar acesso aberto e isolamento dos dados
         run: php tests/demo.php
       - name: Testar transações concorrentes
         run: php tests/concurrency.php
@@ -57,6 +57,8 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run build
+      - name: Conferir interface publicada
+        run: git diff --exit-code -- ../web
       - run: npm run format:check
       - uses: shivammathur/setup-php@v2
         with:
@@ -66,10 +68,6 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Testar frontend integrado ao index PHP
         run: npm test
-      - name: Testar navegação sem login no modo demonstração
-        run: npm test
-        env:
-          E2E_DEMO: '1'
       - name: Testar entrada pública e arquivos privados
         working-directory: .
         run: |
