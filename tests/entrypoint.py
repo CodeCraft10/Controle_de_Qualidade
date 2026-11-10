@@ -39,6 +39,7 @@ def request(path, method='GET', body=None, token=None):
     return response.status, response.headers, response.read()
 
 container = None
+volume = None
 process = None
 password = secrets.token_urlsafe(24)
 with tempfile.TemporaryDirectory(prefix='gp4-entry-') as temporary:
@@ -46,7 +47,8 @@ with tempfile.TemporaryDirectory(prefix='gp4-entry-') as temporary:
     try:
         if args.docker_image:
             container = 'gp4-smoke-' + secrets.token_hex(5)
-            subprocess.run(['docker', 'run', '-d', '--name', container, '-p', '127.0.0.1::80', args.docker_image], check=True, stdout=subprocess.DEVNULL)
+            volume = container + '-state'
+            subprocess.run(['docker', 'run', '-d', '--name', container, '-p', '127.0.0.1::80', '-v', volume + ':/var/www/html/backend/var', args.docker_image], check=True, stdout=subprocess.DEVNULL)
             address = subprocess.check_output(['docker', 'port', container, '80/tcp'], text=True).strip()
             base = 'http://' + address
             bootstrap = ['docker', 'exec', '-i', '--user', 'www-data', container, 'php', 'backend/bin/create-admin.php']
@@ -90,6 +92,22 @@ with tempfile.TemporaryDirectory(prefix='gp4-entry-') as temporary:
         check(status == 201 and json.loads(content)['nome'] == 'Produto smoke', 'cadastro persiste via index')
         check(request('/api/auth/logout', 'POST', token=token)[0] == 204, 'logout revoga sessão')
         check(request('/api/produtos', token=token)[0] == 401, 'token revogado é bloqueado')
+        if container:
+            subprocess.run(['docker', 'rm', '-f', container], check=True, stdout=subprocess.DEVNULL)
+            subprocess.run(['docker', 'run', '-d', '--name', container, '-p', '127.0.0.1::80', '-v', volume + ':/var/www/html/backend/var', args.docker_image], check=True, stdout=subprocess.DEVNULL)
+            base = 'http://' + subprocess.check_output(['docker', 'port', container, '80/tcp'], text=True).strip()
+            for _ in range(100):
+                try:
+                    if request('/api/health')[0] == 200:
+                        break
+                except (OSError, urllib.error.URLError):
+                    pass
+                time.sleep(0.2)
+            status, _, content = request('/api/auth/login', 'POST', {'email': 'smoke@example.test', 'senha': password})
+            check(status == 200, 'conta preservada após recriar contêiner')
+            token = json.loads(content)['token']
+            status, _, content = request('/api/produtos', token=token)
+            check(status == 200 and json.loads(content)['data'][0]['codigo'] == 'SMOKE', 'volume preserva dados após atualização')
         print(f'\n{count} verificações da entrada pública passaram.')
     finally:
         if process:
@@ -97,4 +115,6 @@ with tempfile.TemporaryDirectory(prefix='gp4-entry-') as temporary:
             process.wait(timeout=10)
         if container:
             subprocess.run(['docker', 'rm', '-f', container], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if volume:
+            subprocess.run(['docker', 'volume', 'rm', volume], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         log.close()

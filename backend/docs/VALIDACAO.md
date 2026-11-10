@@ -1,77 +1,67 @@
-# Validação do backend PHP
+# Validação da aplicação integrada
 
-Data: 10/11/2026. Ambiente de testes: PHP CLI 8.4 em contêiner Linux;
-sem banco, frontend ou credenciais reais. Testes automatizados criam dados fictícios
-em diretórios temporários. PHP 8.2 é o mínimo declarado; esta execução usou 8.4.
+Data: 10/11/2026. Frontend existente conectado ao PHP real, sem banco relacional.
+A entrada usada pelos testes de navegador é `public/index.php` na raiz pública do
+projeto, servindo o build do Vite e `/api` na mesma origem.
 
-## Resultados executados
+## Execução local
 
-| Verificação | Resultado |
+PHP CLI 8.4.23 com Fileinfo, Chromium, Node e Playwright. Armazenamento temporário,
+contas sintéticas e fotos de teste; sem credenciais ou dados da VPS.
+
+| Comando | Resultado |
 |---|---|
-| `php -l` em todos os fontes PHP da implementação inicial | Sem erros de sintaxe |
-| `php tests/run.php` | 69 verificações passaram |
-| `php tests/http.php` | 44 verificações HTTP passaram |
-| `php tests/concurrency.php` | 3 verificações de concorrência passaram |
-| Total das três suítes | 116 verificações passaram |
-| `git diff --check main...HEAD` | Sem erros |
-| Alterações em `frontend/` e `docs/qualidade/` | Nenhuma |
+| `php backend/tests/run.php` | 75 verificações de regras e permissões passaram |
+| `php backend/tests/http.php` | 44 verificações HTTP passaram |
+| `php backend/tests/concurrency.php` | 3 verificações concorrentes passaram |
+| `python3 tests/entrypoint.py` | 18 verificações da entrada pública passaram |
+| `npm test` em frontend | 5 cenários integrados passaram |
+| `npm run format:check` | Aprovado |
+| `docker compose config --quiet` | Aprovado |
+| `git diff --check` | Aprovado |
 
-As três suítes completas foram executadas com o código montado em `/app` na
-imagem oficial `php:8.4-cli`. Não houve alterações no código PHP após essas
-execuções; os ajustes seguintes foram de empacotamento Docker e documentação.
+Os cinco cenários no Chromium cobrem login inválido/válido, sessão em memória,
+logout, proteção de rotas, criação/edição de produto, critério, checklist e itens,
+lote com data de fabricação, inspetor, abertura e respostas de inspeção, desvio,
+upload e recuperação de foto real, conclusão e atualização do lote, transições de
+tratamento, dashboard filtrado, download CSV, perfis, tentativa de acesso alheio,
+layout de celular, falha de rede com recuperação e sessão revogada. A execução com
+capturas confirmou visualmente as páginas desktop/mobile usando dados da API real.
 
-## Cobertura observada
+As verificações do index incluem HTML, CSS/JS compilados, CSP, HEAD, login, gravação,
+logout e recusa de acesso a `.env`, fontes, estado privado e `.git`.
 
-- Login, hash, token armazenado como digest, expiração, logout, troca de senha,
-  conta inativa, limitação de tentativas e proteção do último administrador.
-- Separação de perfis e escopo por responsável, inclusive para listas e indicadores.
-- Cadastros, duplicidades, vínculos inválidos, datas impossíveis, checklist vazio,
-  critérios duplicados, preservação de histórico e desativação referencial.
-- Abertura de inspeção, snapshots, progresso, respostas, justificativa de não
-  aplicável, incompletude, exigência de desvio, aprovação, reprovação e finalização única.
-- Reversão de alterações após exceção e recusa de sobrescrever arquivo corrompido.
-- Transições de desvios e histórico; resolução não altera inspeção passada.
-- Servidor HTTP real, JSON inválido, Content-Type, limite de corpo e erros padronizados.
-- Foto PNG real enviada por multipart e recuperada byte a byte, metadados SHA-256,
-  arquivo com falso MIME, excesso de tamanho, tentativa anônima, outro responsável
-  e bloqueio de novo upload após finalização.
-- Filtros, paginação, ordenação permitida, métricas em 0%, 50% e 100%, CSV e
-  neutralização de fórmulas em campos textuais exportados.
-- Quatro processos concorrentes: 80 transações sem perda de gravação; uma
-  finalização confirmada e três recusadas; lote e inspeção mantidos consistentes.
-- Logs sem senha, token ou conteúdo da foto nos fluxos executados.
+## GitHub Actions e pacote VPS
 
-## Empacotamento Docker e limite do ambiente
+Workflow `.github/workflows/frontend.yml`:
 
-A construção do Dockerfile final foi concluída. Foi corrigido o acesso do usuário
-`www-data` aos fontes por `COPY --chown`, mantendo a execução sem root.
-A suíte de 69 verificações também passou dentro da imagem da aplicação.
+- Suítes PHP e sintaxe em PHP 8.2 e 8.4.
+- Build, formatação e cinco testes Playwright no Chromium, usando PHP real.
+- Smoke da entrada pública.
+- Construção do Dockerfile multi-stage e smoke com Apache, incluindo volume
+  persistente, bootstrap de administrador e recriação do contêiner.
 
-O ambiente usa o driver VFS e atingiu o limite de disco durante tentativas de
-repetir todas as suítes na imagem empacotada. Para a última construção, o filesystem
-da imagem PHP Alpine foi exportado/reimportado localmente em uma camada, preservando
-os binários, para reduzir uso de espaço. Essa adaptação é apenas do ambiente de
-validação; o Dockerfile versionado referencia a imagem oficial PHP Alpine.
-A repetição completa das suítes na imagem final ficou limitada por `no space left
-on device`. Isso não substitui nem invalida a execução completa anterior com os
-mesmos fontes; o limite é registrado para permitir reproduzir a validação em máquina
-com mais espaço. Nenhum banco ou frontend foi usado nas verificações.
+A [execução de integração](https://github.com/CodeCraft10/Controle_de_Qualidade/actions/runs/42883311393)
+aprovou os quatro jobs, incluindo imagem Apache e frontend no navegador. O smoke do
+volume após recriação foi acrescentado em seguida e será verificado novamente na
+execução final desta branch. O histórico das execuções fica no GitHub Actions.
 
-## Pendências reais de integração
+A imagem Apache é validada no runner do GitHub porque este ambiente local tem
+pouco espaço de disco. Os testes de navegador e API foram executados localmente
+com PHP nativo, sem depender de Docker.
 
-PostgreSQL, compatibilidade com frontend, homologação independente da equipe,
-implantação e confirmação das regras propostas continuam fora desta entrega.
-Os comandos reproduzíveis estão no README. O histórico antigo de testes Node.js
-não é usado como evidência da implementação PHP.
+## Regras revisadas para a interface
 
-## Automação no GitHub Actions
+Checklists podem existir vazios durante a montagem, mas uma inspeção não pode
+iniciar sem itens. Adição/remoção usa as mesmas validações de perfil, unicidade e
+histórico. Checklists usados em inspeção não podem ter itens alterados. As
+restrições de finalização, snapshots, fotos privadas e transações locais foram
+preservadas e testadas.
 
-O workflow `.github/workflows/frontend.yml` executa as três suítes e a checagem
-sintática em PHP 8.2 e 8.4, sem banco. O frontend tem um job separado para
-`npm ci`, build e formatação; o cache npm usa somente o lockfile do frontend.
+## Limites
 
-Os testes Playwright existentes iniciam o backend Node.js antigo com PostgreSQL
-por `frontend/scripts/e2e-server.mjs`. Por isso não são executados nesta automação:
-o harness precisa ser migrado para o contrato PHP antes de reativar a validação
-de integração. Os arquivos de teste foram preservados. Build/formatação não são
-apresentados como teste de integração frontend/backend.
+O guia de instalação está em [VPS](../../docs/implantacao/VPS.md). Nenhum acesso à
+VPS particular foi fornecido ou utilizado: a entrega prepara e testa o pacote,
+sem afirmar que ele já foi publicado nesse servidor. Domínio, HTTPS e firewall
+são configurados no servidor. PostgreSQL e homologação independente da equipe
+permanecem pendentes; a persistência atual é JSON em uma instância.

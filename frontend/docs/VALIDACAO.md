@@ -1,3 +1,8 @@
+> Este documento registra a validação anterior do frontend. Para a integração
+> atual com PHP, consulte [validação integrada](../../backend/docs/VALIDACAO.md)
+> e [instalação na VPS](../../docs/implantacao/VPS.md). Os testes atuais não dependem
+> de PostgreSQL nem de Node.js no backend.
+
 # Validação do frontend
 
 Esta matriz relaciona o plano individual do João com os fluxos implementados. Resultados automatizados, capturas e observações de homologação devem ser registrados separadamente: a existência de uma tela não comprova a conclusão de um cenário.
