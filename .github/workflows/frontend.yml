@@ -36,6 +36,8 @@ jobs:
         run: php tests/run.php
       - name: Testar API HTTP e fotos
         run: php tests/http.php
+      - name: Testar modo demonstração e retorno ao login
+        run: php tests/demo.php
       - name: Testar transações concorrentes
         run: php tests/concurrency.php
 
@@ -64,6 +66,10 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Testar frontend integrado ao index PHP
         run: npm test
+      - name: Testar navegação sem login no modo demonstração
+        run: npm test
+        env:
+          E2E_DEMO: '1'
       - name: Testar entrada pública e arquivos privados
         working-directory: .
         run: |

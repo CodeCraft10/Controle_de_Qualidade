@@ -1,6 +1,6 @@
 {
   "name": "gp4/backend-php",
-  "description": "API de controle de qualidade — backend de Pedro",
+  "description": "API de controle de qualidade \u2014 backend de Pedro",
   "type": "project",
   "require": {
     "php": ">=8.2",
@@ -12,7 +12,8 @@
     "test": [
       "php tests/run.php",
       "php tests/http.php",
-      "php tests/concurrency.php"
+      "php tests/concurrency.php",
+      "php tests/demo.php"
     ]
   }
 }
