@@ -3,10 +3,10 @@ name: Backend PHP e frontend
 on:
   workflow_dispatch:
   pull_request:
-    paths: ['frontend/**', 'backend/**', 'public/**', 'deploy/**', 'tests/**', 'Dockerfile', '.dockerignore', 'compose.yaml', '.github/workflows/frontend.yml']
+    paths: ['frontend/**', 'backend/**', 'public/**', 'deploy/**', 'tests/**', 'Dockerfile', 'index.php', '.dockerignore', 'compose.yaml', '.github/workflows/frontend.yml']
   push:
     branches: [main]
-    paths: ['frontend/**', 'backend/**', 'public/**', 'deploy/**', 'tests/**', 'Dockerfile', '.dockerignore', 'compose.yaml', '.github/workflows/frontend.yml']
+    paths: ['frontend/**', 'backend/**', 'public/**', 'deploy/**', 'tests/**', 'Dockerfile', 'index.php', '.dockerignore', 'compose.yaml', '.github/workflows/frontend.yml']
 
 permissions:
   contents: read
@@ -66,7 +66,9 @@ jobs:
         run: npm test
       - name: Testar entrada pública e arquivos privados
         working-directory: .
-        run: python3 tests/entrypoint.py
+        run: |
+          python3 tests/entrypoint.py
+          python3 tests/entrypoint.py --root-index
 
   deployment:
     name: Pacote VPS (Apache)

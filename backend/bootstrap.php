@@ -27,7 +27,9 @@ function gp4_store(): \GP4\Storage\JsonStore {
     $path = getenv('STORAGE_PATH') ?: $default;
     if (!str_starts_with($path, '/')) $path = __DIR__ . '/' . $path;
     $documentRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: null;
-    $normalizedParent = realpath(dirname($path));
+    $parent = dirname($path);
+    while (!is_dir($parent) && $parent !== dirname($parent)) $parent = dirname($parent);
+    $normalizedParent = realpath($parent);
     if ($documentRoot === $project && $normalizedParent &&
         ($normalizedParent === $project || str_starts_with($normalizedParent, $project . DIRECTORY_SEPARATOR))) {
         throw new \RuntimeException('Armazenamento deve ficar fora da raiz pública');

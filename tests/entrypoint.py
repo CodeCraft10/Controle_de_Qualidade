@@ -14,6 +14,7 @@ import urllib.request
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--docker-image')
+parser.add_argument('--root-index', action='store_true')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 count = 0
@@ -61,7 +62,7 @@ with tempfile.TemporaryDirectory(prefix='gp4-entry-') as temporary:
             base = f'http://127.0.0.1:{port}'
             env = {**os.environ, 'STORAGE_PATH': str(Path(temporary) / 'state.json')}
             bootstrap = [php, 'backend/bin/create-admin.php']
-            process = subprocess.Popen([php, '-S', f'127.0.0.1:{port}', '-t', 'public', 'public/index.php'], cwd=root, env=env, stdout=log, stderr=log)
+            process = subprocess.Popen([php, '-S', f'127.0.0.1:{port}', '-t', '.' if args.root_index else 'public', 'index.php' if args.root_index else 'public/index.php'], cwd=root, env=env, stdout=log, stderr=log)
         subprocess.run(bootstrap, input=f'Smoke\nsmoke@example.test\n{password}\n', text=True, cwd=root, env=env, check=True, stdout=subprocess.DEVNULL)
         for _ in range(100):
             try:
