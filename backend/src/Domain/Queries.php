@@ -55,7 +55,7 @@ final class Queries {
         $approved = count(array_filter($rows, fn($i) => $i['status'] === 'aprovada'));
         $failed = count(array_filter($rows, fn($i) => $i['status'] === 'reprovada'));
         $done = $approved + $failed;
-        return ['total' => count($rows), 'em_andamento' => count($rows) - $done, 'aprovadas' => $approved, 'reprovadas' => $failed,
+        return ['total' => count($rows), 'em_andamento' => count($rows) - $done, 'finalizadas' => $done, 'aprovadas' => $approved, 'reprovadas' => $failed,
             'taxa_aprovacao' => $done ? round($approved / $done * 100, 2) : 0,
             'taxa_reprovacao' => $done ? round($failed / $done * 100, 2) : 0];
     }

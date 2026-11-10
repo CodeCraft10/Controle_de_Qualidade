@@ -64,7 +64,7 @@ final class Inspections {
         if ($r['resultado'] !== 'nao_conforme') throw new ApiError(409, 'Resposta deve ser não conforme');
         if (array_filter($s['nao_conformidades'], fn($n) => $n['resposta_id'] === $answerId)) throw new ApiError(409, 'Resposta já possui desvio');
         $n = Records::add($s, 'nao_conformidades', [
-            'resposta_id' => $answerId, 'inspecao_id' => $i['id'], 'descricao' => Rules::text($b['descricao'] ?? null, 'descricao', 3000),
+            'resposta_id' => $answerId, 'item_id' => $r['item_id'], 'inspecao_id' => $i['id'], 'descricao' => Rules::text($b['descricao'] ?? null, 'descricao', 3000),
             'classificacao' => Rules::choice($b['classificacao'] ?? 'menor', ['menor', 'maior', 'critica'], 'classificacao'), 'status' => 'aberta',
             'historico' => [['status' => 'aberta', 'usuario_id' => $u['id'], 'criado_em' => Records::now()]]
         ]);
