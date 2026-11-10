@@ -32,7 +32,7 @@ final class Queries {
             if (isset($q['data_inicio']) && $date < $q['data_inicio']) continue;
             if (isset($q['data_fim']) && $date > $q['data_fim']) continue;
             if (isset($q['q'])) {
-                $haystack = implode(' ', array_filter($row, 'is_scalar'));
+                $haystack = implode(' ', array_filter([...($i ?? []), ...$row], 'is_scalar'));
                 if (stripos($haystack, $q['q']) === false) continue;
             }
             $rows[] = $row;

@@ -31,7 +31,7 @@ async function screenshot(page, filename) {
   await expect(page.locator('.toast')).toHaveCount(0, { timeout: 8000 });
   await expect(page.locator('.loading-state')).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
-  const directory = path.resolve('docs/screenshots');
+  const directory = path.resolve(process.env.E2E_SCREENSHOT_DIR || 'docs/screenshots');
   await mkdir(directory, { recursive: true });
   await page.screenshot({ path: path.join(directory, filename), fullPage: true });
 }

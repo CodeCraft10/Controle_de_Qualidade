@@ -3,10 +3,10 @@
 on:
   workflow_dispatch:
   pull_request:
-    paths: ['frontend/**', 'backend/**', '.github/workflows/frontend.yml']
+    paths: ['frontend/**', 'backend/**', 'public/**', 'deploy/**', 'tests/**', 'Dockerfile', '.dockerignore', 'compose.yaml', '.github/workflows/frontend.yml']
   push:
     branches: [main]
-    paths: ['frontend/**', 'backend/**', '.github/workflows/frontend.yml']
+    paths: ['frontend/**', 'backend/**', 'public/**', 'deploy/**', 'tests/**', 'Dockerfile', '.dockerignore', 'compose.yaml', '.github/workflows/frontend.yml']
 
 permissions:
   contents: read
@@ -40,7 +40,7 @@ jobs:
         run: php tests/concurrency.php
 
   validate:
-    name: Frontend (build e formato)
+    name: Frontend integrado (Chromium)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -56,6 +56,27 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run format:check
-      # Os testes Playwright atuais dependem do backend Node.js removido e de
-      # PostgreSQL. Reativar após adaptar o harness ao contrato PHP e autorizar
-      # a integração. Não simular integração concluída com testes substitutos.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: fileinfo
+          coverage: none
+      - run: npx playwright install --with-deps chromium
+      - name: Testar frontend integrado ao index PHP
+        run: npm test
+      - name: Testar entrada pública e arquivos privados
+        working-directory: .
+        run: python3 tests/entrypoint.py
+
+  deployment:
+    name: Pacote VPS (Apache)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar configuração Compose
+        run: docker compose config --quiet
+      - name: Construir aplicação integrada
+        run: docker build -t gp4-integrado .
+      - name: Testar imagem Apache descartável
+        run: python3 tests/entrypoint.py --docker-image gp4-integrado
