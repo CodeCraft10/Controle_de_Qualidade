@@ -1,4 +1,4 @@
-FROM php:8.4-cli
+FROM php:8.4-cli-alpine
 WORKDIR /app
 COPY . .
 RUN chmod -R a+rX /app && mkdir -p var && chown www-data:www-data var && chmod 700 var
