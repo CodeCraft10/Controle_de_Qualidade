@@ -1,6 +1,6 @@
 # GP4 — Backend do Pedro
 
-API REST em JavaScript, Node.js, Express e PostgreSQL. O SQL é uma proposta provisória para Luiz, pois o repositório tinha somente o README quando este trabalho começou. O frontend do João ainda não está neste repositório.
+API REST em JavaScript, Node.js, Express e PostgreSQL. O SQL é uma proposta provisória para Luiz, pois o repositório tinha somente o README quando este trabalho começou. O frontend do João está em [`../frontend`](../frontend/README.md), integrado aos contratos desta API.
 
 ## Instalar e executar
 
