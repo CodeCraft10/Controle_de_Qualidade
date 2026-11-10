@@ -59,6 +59,12 @@ disponibiliza visões analíticas em tempo real, mantendo histórico seguro e au
 
 ## ▶️ Executar o sistema
 
+**VPS já configurada com a raiz deste projeto:** o `index.php` da raiz abre a aplicação
+na homepage. Com o frontend já compilado, execute `git pull origin main` e abra seu
+domínio. Não é preciso criar uma conta para exibir a tela inicial. A autenticação
+continua protegendo as funções internas. Veja o [guia da VPS](docs/implantacao/VPS.md).
+
+
 A aplicação está integrada: `public/index.php` entrega a interface e encaminha `/api` ao backend PHP, usando uma única URL.
 
 Siga o [guia de instalação na VPS](docs/implantacao/VPS.md) para compilar, iniciar e criar a primeira conta. Com Docker Compose:

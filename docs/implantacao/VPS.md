@@ -1,3 +1,28 @@
+# Hospedagem já configurada na raiz do projeto
+
+Se o Nginx já aponta para `/home/codecraft/www`, o `index.php` da raiz encaminha
+para a aplicação integrada. Não precisa alterar Nginx nem criar links simbólicos.
+Como o frontend já foi compilado nesta VPS, esta atualização exige somente:
+
+```sh
+cd /home/codecraft/www
+git pull origin main
+```
+
+Abra `https://codecraft.devlook.xyz/`. Exibir a tela inicial não exige criar uma
+conta; a conta é apenas para acessar as funções protegidas do sistema.
+Se o frontend mudar em atualizações futuras, compile com `cd frontend && npm ci && npm run build`.
+
+Em PHP nativo, novos dados ficam por padrão em uma pasta `.gp4/` **ao lado** do
+repositório, fora da raiz publicada. Não configure `STORAGE_PATH` dentro da pasta
+servida pelo Nginx. Se já houver dados em `backend/var/state.json` da versão anterior,
+pare a aplicação e transfira-os para um caminho privado, configurando esse caminho
+absoluto no `backend/.env`; não deixe a cópia antiga na raiz publicada. Não há
+migração automática nem remoção de dados existentes.
+
+A instalação Docker e a configuração com `public/` como DocumentRoot continuam
+suportadas e estão descritas abaixo.
+
 # Executar o sistema integrado na sua VPS
 
 A entrada é **`public/index.php`**. Ela entrega o frontend compilado e encaminha
