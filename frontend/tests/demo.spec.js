@@ -17,7 +17,7 @@ test('entra sem credenciais, cadastra produto e continua após recarregar', asyn
   await page.getByRole('button', { name: 'Criar cadastro', exact: true }).click();
   await expect(page).toHaveURL(/#\/produtos\/[0-9]+$/);
   await page.reload();
-  await expect(page.getByText('Produto sem login', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Produto sem login', exact: true })).toBeVisible();
   await expect(page.getByLabel('E-mail', { exact: true })).toHaveCount(0);
 });
 
