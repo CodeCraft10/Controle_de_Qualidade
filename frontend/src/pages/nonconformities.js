@@ -29,7 +29,7 @@ export async function mountNonconformities(root, { id } = {}) {
   function mountList() {
     root.innerHTML = `<header class="page-header"><div><p class="eyebrow">CONTROLE DE QUALIDADE</p><h1>Não conformidades</h1><p class="muted">Acompanhe desvios, evidências e o histórico de tratamento.</p></div><a class="button secondary" href="#/inspecoes">Ir para inspeções</a></header>
       <section class="card"><form id="nc-filters" class="form-grid" aria-label="Filtros de não conformidades">
-        <div class="field"><label for="nc-search">Produto ou lote</label><input id="nc-search" name="busca" maxlength="100" placeholder="Nome ou código"></div>
+        <div class="field"><label for="nc-search">Produto ou lote</label><input id="nc-search" name="q" maxlength="100" placeholder="Nome ou código"></div>
         <div class="field"><label for="nc-status">Situação</label><select id="nc-status" name="status"><option value="">Todas as situações</option>${Object.entries(
           statuses,
         )
@@ -53,7 +53,7 @@ export async function mountNonconformities(root, { id } = {}) {
       query = new URLSearchParams(
         Object.entries(values)
           .filter(([, value]) => value.trim())
-          .map(([key, value]) => [key, value.trim()]),
+          .map(([key, value]) => [{ de: 'data_inicio', ate: 'data_fim' }[key] || key, value.trim()]),
       );
       page = 1;
       loadList();
@@ -161,7 +161,7 @@ export async function mountNonconformities(root, { id } = {}) {
     feedback.innerHTML =
       '<label for="nc-progress">Enviando foto</label><progress id="nc-progress" max="100" value="0"></progress><span id="nc-progress-text">0%</span>';
     const body = new FormData();
-    body.append('foto', file);
+    body.append('arquivo', file);
     try {
       await api.upload(
         `/nao-conformidades/${encodeURIComponent(id)}/evidencias`,
@@ -211,7 +211,7 @@ export async function mountNonconformities(root, { id } = {}) {
             preview.innerHTML = loading();
             try {
               const blob = await api.blob(
-                `/evidencias/${encodeURIComponent(evidence.id)}/arquivo`,
+                `/evidencias/${encodeURIComponent(evidence.id)}`,
                 { signal: controller.signal },
               );
               if (disposed || !card.isConnected) return;
@@ -237,7 +237,7 @@ export async function mountNonconformities(root, { id } = {}) {
             try {
               const blob =
                 cachedBlob ||
-                (await api.blob(`/evidencias/${encodeURIComponent(evidence.id)}/arquivo`, {
+                (await api.blob(`/evidencias/${encodeURIComponent(evidence.id)}`, {
                   signal: controller.signal,
                 }));
               if (!disposed) download(blob, evidence.nome_original);

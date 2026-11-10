@@ -23,7 +23,7 @@ async function mountList(root) {
   let filters = {};
   root.innerHTML = `<header class="page-header"><div><p class="eyebrow">CONTROLE DE QUALIDADE</p><h1>Inspeções</h1><p class="muted">Do checklist à decisão final, cada etapa registrada.</p></div><button class="button" type="button" data-new>Nova inspeção</button></header>
     <section class="card" data-create hidden></section>
-    <section class="card"><form class="toolbar" data-filters><div class="field"><label for="inspection-search">Produto ou lote</label><input id="inspection-search" name="busca" placeholder="Buscar produto ou lote" maxlength="100"></div><div class="field"><label for="inspection-status">Situação</label><select id="inspection-status" name="status"><option value="">Todas as situações</option>${option('em_andamento', 'Em andamento')}${option('aprovada', 'Aprovada')}${option('reprovada', 'Reprovada')}</select></div><button class="button secondary">Filtrar</button></form><div data-list aria-live="polite">${loading()}</div></section>`;
+    <section class="card"><form class="toolbar" data-filters><div class="field"><label for="inspection-search">Produto ou lote</label><input id="inspection-search" name="q" placeholder="Buscar produto ou lote" maxlength="100"></div><div class="field"><label for="inspection-status">Situação</label><select id="inspection-status" name="status"><option value="">Todas as situações</option>${option('em_andamento', 'Em andamento')}${option('aprovada', 'Aprovada')}${option('reprovada', 'Reprovada')}</select></div><button class="button secondary">Filtrar</button></form><div data-list aria-live="polite">${loading()}</div></section>`;
   const list = root.querySelector('[data-list]');
   const filterForm = root.querySelector('[data-filters]');
   async function load() {
@@ -34,7 +34,7 @@ async function mountList(root) {
       const response = await api.request(`/inspecoes?${query}`);
       if (!active || sequence !== listSequence) return;
       list.innerHTML = response.data.length
-        ? `<div class="table-wrap"><table><thead><tr><th scope="col">Inspeção</th><th scope="col">Produto / lote</th><th scope="col">Iniciada em</th><th scope="col">Situação</th><th scope="col">Ação</th></tr></thead><tbody>${response.data.map((item) => `<tr><td>#${esc(item.id)}</td><td><strong>${esc(item.produto)}</strong><br><span class="muted">${esc(item.lote_codigo)}</span></td><td>${formatDate(item.iniciada_em)}</td><td>${badge(item.status)}</td><td><a class="button secondary" href="#/inspecoes/${esc(item.id)}">Abrir inspeção <span class="sr-only">${esc(item.id)}</span></a></td></tr>`).join('')}</tbody></table></div><div class="pagination"><span>${response.total} inspeções · página ${page} de ${response.pages}</span><div class="actions"><button type="button" class="button secondary" data-prev ${page <= 1 ? 'disabled' : ''}>Anterior</button><button type="button" class="button secondary" data-next ${page >= response.pages ? 'disabled' : ''}>Próxima</button></div></div>`
+        ? `<div class="table-wrap"><table><thead><tr><th scope="col">Inspeção</th><th scope="col">Produto / lote</th><th scope="col">Iniciada em</th><th scope="col">Situação</th><th scope="col">Ação</th></tr></thead><tbody>${response.data.map((item) => `<tr><td>#${esc(item.id)}</td><td><strong>${esc(item.produto_nome)}</strong><br><span class="muted">${esc(item.lote_codigo)}</span></td><td>${formatDate(item.iniciada_em)}</td><td>${badge(item.status)}</td><td><a class="button secondary" href="#/inspecoes/${esc(item.id)}">Abrir inspeção <span class="sr-only">${esc(item.id)}</span></a></td></tr>`).join('')}</tbody></table></div><div class="pagination"><span>${response.total} inspeções · página ${page} de ${response.pages}</span><div class="actions"><button type="button" class="button secondary" data-prev ${page <= 1 ? 'disabled' : ''}>Anterior</button><button type="button" class="button secondary" data-next ${page >= response.pages ? 'disabled' : ''}>Próxima</button></div></div>`
         : empty(
             'Nenhuma inspeção encontrada. Abra uma inspeção para iniciar o controle de um lote.',
           );
@@ -285,6 +285,10 @@ async function mountDetail(root, id) {
     root.innerHTML = loading();
     try {
       inspection = await api.request(`/inspecoes/${id}`);
+      inspection.itens = inspection.itens.map((item) => {
+        const answer = inspection.respostas.find((r) => r.item_id === item.id);
+        return { ...item, item_id: item.id, resposta_id: answer?.id, resultado: answer?.resultado, observacao: answer?.observacao };
+      });
       const [lot, checklist, found] = await Promise.all([
         api.request(`/lotes/${inspection.lote_id}`),
         api.request(`/checklists/${inspection.checklist_id}`),

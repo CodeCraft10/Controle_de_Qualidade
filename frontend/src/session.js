@@ -13,14 +13,11 @@ export function setSession(session) {
   clearTimeout(expirationTimer);
   token = session.token;
   user = session.usuario;
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+  if (Number.isFinite(session.expires_in) && session.expires_in > 0) {
     expirationTimer = setTimeout(
       () => clearSession('Sua sessão expirou. Entre novamente.'),
-      Math.max(0, payload.exp * 1000 - Date.now()),
+      session.expires_in * 1000,
     );
-  } catch {
-    // The backend validates the token; expiry is also handled on HTTP 401.
   }
 }
 

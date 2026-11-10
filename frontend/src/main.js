@@ -53,9 +53,17 @@ function shell(current) {
     <div class="main-shell"><header class="topbar"><div class="topbar-start"><button class="icon-button mobile-menu" aria-controls="navigation" aria-expanded="false" aria-label="Abrir navegação">${icon('M4 6h16 M4 12h16 M4 18h16')}</button><span class="breadcrumb">Workspace <span>/</span> <strong>${esc(paths[current]?.[0] || 'Navegação')}</strong></span></div>
       <div class="user-menu"><span class="avatar" aria-hidden="true">${esc(user.nome.slice(0, 2).toUpperCase())}</span><span class="user-info"><strong>${esc(user.nome)}</strong><small>${esc({ admin: 'Administrador', supervisor: 'Supervisor', inspetor: 'Inspetor' }[user.perfil])}</small></span><button class="logout-button" id="logout">Sair ${icon('M9 3H4v18h5 M14 8l5 4-5 4 M8 12h11')}</button></div>
     </header><main id="main-content" tabindex="-1"></main><footer class="main-footer"><span>GP4 · Sistema Inteligente de Controle de Qualidade</span><span>Registro. Evidência. Confiança.</span></footer></div></div>`;
-  document.querySelector('#logout').addEventListener('click', () => {
+  document.querySelector('#logout').addEventListener('click', async (event) => {
     const currentPage = document.querySelector('#main-content');
-    if (!currentPage?.canLeave || currentPage.canLeave()) clearSession();
+    if (currentPage?.canLeave && !currentPage.canLeave()) return;
+    event.currentTarget.disabled = true;
+    try {
+      await api.request('/auth/logout', { method: 'POST' });
+      clearSession();
+    } catch (error) {
+      notify(error.message);
+      if (getUser()) document.querySelector('#logout').disabled = false;
+    }
   });
   const menu = document.querySelector('.mobile-menu');
   const closeMenu = () => {
@@ -109,7 +117,7 @@ function mountLogin() {
     button.textContent = 'Entrando…';
     errorMessage.textContent = '';
     try {
-      const result = await api.request('/login', {
+      const result = await api.request('/auth/login', {
         method: 'POST',
         body: { email: form.elements.email.value.trim(), senha: form.elements.senha.value },
         signal: controller.signal,
