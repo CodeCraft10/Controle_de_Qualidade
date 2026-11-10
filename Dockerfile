@@ -17,4 +17,5 @@ RUN mkdir -p /var/www/html/backend/var \
     && chmod -R a+rX /var/www/html \
     && chmod 700 /var/www/html/backend/var
 WORKDIR /var/www/html
+ENV STORAGE_PATH=var/state.json
 EXPOSE 80

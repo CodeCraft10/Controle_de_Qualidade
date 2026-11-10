@@ -20,7 +20,17 @@ if (is_file(__DIR__ . '/.env')) {
 }
 date_default_timezone_set('UTC');
 function gp4_store(): \GP4\Storage\JsonStore {
-    $path = getenv('STORAGE_PATH') ?: 'var/state.json';
+    // Em hospedagem nativa, dados privados ficam fora da pasta publicada.
+    // Docker usa STORAGE_PATH explícito no volume persistente.
+    $project = realpath(dirname(__DIR__));
+    $default = dirname($project) . '/.gp4/' . hash('sha256', $project) . '/state.json';
+    $path = getenv('STORAGE_PATH') ?: $default;
     if (!str_starts_with($path, '/')) $path = __DIR__ . '/' . $path;
+    $documentRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: null;
+    $normalizedParent = realpath(dirname($path));
+    if ($documentRoot === $project && $normalizedParent &&
+        ($normalizedParent === $project || str_starts_with($normalizedParent, $project . DIRECTORY_SEPARATOR))) {
+        throw new \RuntimeException('Armazenamento deve ficar fora da raiz pública');
+    }
     return new \GP4\Storage\JsonStore($path);
 }
