@@ -66,8 +66,13 @@ Cobertura funcional: perfis, login, revogação de sessão, cadastros, vínculos
 - docs/openapi.json: referência de todos os endpoints.
 - docs/INTEGRACAO.md: exemplos para João.
 - docs/CONTRATO_DADOS.md: entidades, relações e alinhamento com Luiz.
+- docs/MODELAGEM_BANCO.md: DER, dicionário, consultas, carga de demonstração e backup/restauração.
 - docs/REGRAS_E_ENTREGA.md: regras, decisões e dependências.
 - GUIA_PEDRO.md: guia de estudo e demonstração.
+
+Para popular somente um banco de desenvolvimento com cenários fictícios, siga `docs/MODELAGEM_BANCO.md` e execute `npm.cmd run db:seed:demo`. O comando exige ativação explícita por variáveis de ambiente e uma senha descartável.
+
+Backups PostgreSQL em formato customizado e restauração em banco vazio estão documentados em `docs/MODELAGEM_BANCO.md`, com scripts `scripts/backup.ps1` e `scripts/restore.ps1`. Inclua também o diretório privado de fotos na rotina operacional.
 
 ## Operação
 

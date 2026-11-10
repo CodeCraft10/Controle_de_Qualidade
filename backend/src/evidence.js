@@ -69,6 +69,7 @@ router.post(
     let written = false;
     try {
       const result = await transaction(async (db) => {
+        await db.query("SELECT set_config('gp4.usuario_id',$1,true)", [req.user.id]);
         const inspection = await access(db, id, req.user, true);
         if (inspection.status !== 'em_andamento')
           throw error(409, 'Inspeção já finalizada; anexos preservados');

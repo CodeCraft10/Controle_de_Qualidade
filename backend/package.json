@@ -6,6 +6,7 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "db:migrate": "node src/migrate.js",
+    "db:seed:demo": "node scripts/seed-demo.js",
     "user:create": "node src/create-user.js",
     "test": "node --test --test-concurrency=1 tests/*.test.js",
     "format": "prettier --write .",

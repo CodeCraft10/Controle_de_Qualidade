@@ -56,6 +56,7 @@ router.post(
     const loteId = positiveId(req.body.lote_id),
       checklistId = positiveId(req.body.checklist_id);
     const result = await transaction(async (db) => {
+      await db.query("SELECT set_config('gp4.usuario_id',$1,true)", [req.user.id]);
       const lot = await db.query(
         'SELECT l.*,p.ativo AS produto_ativo FROM lotes l JOIN produtos p ON p.id=l.produto_id WHERE l.id=$1 FOR UPDATE OF l FOR SHARE OF p',
         [loteId],
@@ -130,6 +131,7 @@ router.put(
     if (req.body.resultado === 'nao_aplicavel' && !observation)
       throw error(400, 'Justifique o resultado não aplicável em observacao');
     const result = await transaction(async (db) => {
+      await db.query("SELECT set_config('gp4.usuario_id',$1,true)", [req.user.id]);
       const inspection = await editableInspection(db, id, req.user);
       const item = await db.query(
         'SELECT item_id FROM inspecao_itens WHERE item_id=$1 AND inspecao_id=$2',
@@ -156,6 +158,7 @@ router.post(
   wrap(async (req, res) => {
     const id = positiveId(req.params.id);
     const result = await transaction(async (db) => {
+      await db.query("SELECT set_config('gp4.usuario_id',$1,true)", [req.user.id]);
       const inspection = await editableInspection(db, id, req.user);
       const items = await db.query(
         'SELECT item_id FROM inspecao_itens WHERE inspecao_id=$1 AND obrigatorio=true',
@@ -196,6 +199,7 @@ router.post(
     if (!['menor', 'maior', 'critica'].includes(classification))
       throw error(400, 'Classificação inválida');
     const result = await transaction(async (db) => {
+      await db.query("SELECT set_config('gp4.usuario_id',$1,true)", [req.user.id]);
       const { rows } = await db.query(
         'SELECT r.*,i.inspetor_id,i.status FROM respostas r JOIN inspecoes i ON i.id=r.inspecao_id WHERE r.id=$1 FOR UPDATE OF i',
         [respostaId],
@@ -273,6 +277,7 @@ router.patch(
     if (!['em_tratamento', 'resolvida'].includes(req.body.status))
       throw error(400, 'Status inválido');
     const result = await transaction(async (db) => {
+      await db.query("SELECT set_config('gp4.usuario_id',$1,true)", [req.user.id]);
       const id = positiveId(req.params.id);
       const found = await db.query('SELECT * FROM nao_conformidades WHERE id=$1 FOR UPDATE', [id]);
       if (!found.rows.length) throw error(404, 'Não conformidade não encontrada');

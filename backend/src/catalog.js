@@ -137,6 +137,7 @@ for (const [name, config] of Object.entries(resources)) {
       const data = parseBody(req.body, config),
         keys = Object.keys(data);
       const result = await transaction(async (db) => {
+        await db.query("SELECT set_config('gp4.usuario_id',$1,true)", [req.user.id]);
         if (name === 'lotes') await activeProduct(db, data.produto_id);
         const { rows } = await db.query(
           'INSERT INTO ' +
@@ -162,6 +163,7 @@ for (const [name, config] of Object.entries(resources)) {
         id = positiveId(req.params.id),
         keys = Object.keys(data);
       const result = await transaction(async (db) => {
+        await db.query("SELECT set_config('gp4.usuario_id',$1,true)", [req.user.id]);
         const found = await db.query('SELECT id FROM ' + name + ' WHERE id=$1 FOR UPDATE', [id]);
         if (!found.rows.length) throw error(404, 'Registro não encontrado');
         await freezeUsed(db, name, id);
@@ -225,6 +227,7 @@ router.post(
     if (req.body.obrigatorio !== undefined && typeof req.body.obrigatorio !== 'boolean')
       throw error(400, 'obrigatorio deve ser booleano');
     const result = await transaction(async (db) => {
+      await db.query("SELECT set_config('gp4.usuario_id',$1,true)", [req.user.id]);
       await editableChecklist(db, checklistId);
       const criterion = await db.query(
         'SELECT id FROM criterios WHERE id=$1 AND ativo=true FOR SHARE',
@@ -245,6 +248,7 @@ router.delete(
   managers,
   wrap(async (req, res) => {
     await transaction(async (db) => {
+      await db.query("SELECT set_config('gp4.usuario_id',$1,true)", [req.user.id]);
       const id = positiveId(req.params.id);
       await editableChecklist(db, id);
       const deleted = await db.query(
