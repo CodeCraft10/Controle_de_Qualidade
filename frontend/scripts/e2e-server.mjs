@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 import { randomBytes, randomUUID } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
@@ -62,7 +62,10 @@ try {
     CORS_ORIGIN: 'http://127.0.0.1:5173,http://localhost:5173',
   });
   ({ pool } = requireBackend('./src/db.js'));
-  for (const file of ['001_inicial.sql', '002_integridade.sql']) {
+  const migrations = (await readdir(path.join(root, 'backend/sql')))
+    .filter((file) => file.endsWith('.sql'))
+    .sort();
+  for (const file of migrations) {
     await pool.query(await readFile(path.join(root, 'backend/sql', file), 'utf8'));
   }
   const password = randomBytes(24).toString('base64url');

@@ -63,6 +63,8 @@ Ambiente: Node.js 24.22.1, PostgreSQL 17.11 e Chromium, com API real, migraçõe
 
 ## Capturas
 
+Após incorporar a atualização `531f32d` da `main`, os cinco cenários foram executados novamente com todas as migrações SQL, incluindo `003_auditoria_acoes.sql`: **5 aprovados em 19,6 segundos**, sem novas capturas. Build e formatação também aprovados. O servidor de testes descobre as migrações na pasta `backend/sql`, em ordem, para acompanhar a evolução do banco.
+
 Geradas pelo navegador a partir dos registros persistidos no banco de teste:
 
 - [Login — desktop](screenshots/login-desktop.png)
