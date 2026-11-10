@@ -6,6 +6,7 @@ services:
       - "${APP_BIND:-127.0.0.1}:${APP_PORT:-8080}:80"
     environment:
       APP_ENV: production
+      DEMO_MODE: ${DEMO_MODE:-false}
       STORAGE_PATH: var/state.json
       TOKEN_TTL: 28800
     volumes:

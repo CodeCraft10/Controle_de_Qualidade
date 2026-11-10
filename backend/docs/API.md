@@ -168,3 +168,16 @@ regras de autorização, unicidade e histórico da atualização do cadastro.
 Indicadores incluem `finalizadas` e `nao_conformidades` no escopo dos filtros e
 da autorização. Fotos também incluem `nome_original` sanitizado para exibição;
 o caminho de acesso continua `/evidencias/{id}`, autenticado.
+
+## Demonstração opcional
+
+- `GET /config` é público e retorna `{demo_mode:false}` por padrão.
+- `POST /auth/demo` retorna 404 com o modo desligado. Com `DEMO_MODE=true`, cria
+  uma sessão temporária de administrador de teste, sem pedir credenciais, com
+  `usuario.demo=true`, token opaco e validade de uma hora.
+- As outras rotas continuam validando Bearer e regras de negócio. A interface
+  obtém a sessão automaticamente somente quando a configuração do servidor permite.
+- Dados demo ficam isolados em outro arquivo. Desligar o modo invalida os tokens
+  demo e restaura o acesso normal aos dados reais.
+
+Para ativar/desativar na VPS nativa: `php backend/bin/demo.php on|off`.

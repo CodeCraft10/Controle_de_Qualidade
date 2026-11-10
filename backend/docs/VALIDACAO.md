@@ -66,3 +66,15 @@ VPS particular foi fornecido ou utilizado: a entrega prepara e testa o pacote,
 sem afirmar que ele já foi publicado nesse servidor. Domínio, HTTPS e firewall
 são configurados no servidor. PostgreSQL e homologação independente da equipe
 permanecem pendentes; a persistência atual é JSON em uma instância.
+
+## Demonstração sem login manual
+
+`php backend/tests/demo.php` verifica ativação explícita, endpoint indisponível
+quando desligado, sessão automática, separação de contas/dados, preservação dos
+registros normais, recusa do token ao desligar, retorno ao login normal e comando
+CLI on/off sem alterar outras configurações.
+
+`E2E_DEMO=1 npm test` em frontend verifica entrada direta no dashboard sem email
+ou senha, aviso visível, criação de produto, recarga sem login e validação/revogação
+do token. A execução normal de `npm test` continua cobrindo as telas com login.
+Ambos os modos são executados na CI.
