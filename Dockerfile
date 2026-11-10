@@ -11,7 +11,7 @@ COPY deploy/apache.conf /etc/apache2/sites-available/000-default.conf
 COPY deploy/php.ini /usr/local/etc/php/conf.d/gp4.ini
 COPY backend/ /var/www/html/backend/
 COPY public/ /var/www/html/public/
-COPY --from=frontend /build/dist/ /var/www/html/frontend/dist/
+COPY --from=frontend /web/ /var/www/html/web/
 RUN mkdir -p /var/www/html/backend/var \
     && chown -R www-data:www-data /var/www/html/backend/var \
     && chmod -R a+rX /var/www/html \

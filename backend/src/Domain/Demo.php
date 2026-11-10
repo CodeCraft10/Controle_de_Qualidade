@@ -1,14 +1,13 @@
 <?php
 declare(strict_types=1);
 namespace GP4\Domain;
-use GP4\Http\ApiError;
 use GP4\Storage\Store;
 
 final class Demo {
-    public static function enabled(): bool { return getenv('DEMO_MODE') === 'true'; }
+    /** Versão temporária aberta para testes, conforme escopo atual. */
+    public static function enabled(): bool { return true; }
 
     public static function session(Store $store): array {
-        if (!self::enabled()) throw new ApiError(404, 'Modo demonstração desativado');
         return $store->transaction(function (array &$s): array {
             $user = $s['usuarios'][$s['demo_user_id'] ?? 0] ?? null;
             if (!$user || !$user['ativo'] || $user['perfil'] !== 'admin') {

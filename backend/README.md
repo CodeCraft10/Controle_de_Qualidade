@@ -1,3 +1,8 @@
+> A interface atual é uma versão aberta de testes: não existe tela de login e
+> não é preciso criar conta para usar o painel. Os serviços de credenciais da API
+> permanecem no backend para evolução futura. O antigo comando demo.php foi removido.
+> Consulte [publicação na VPS](../docs/implantacao/VPS.md).
+
 # Backend PHP — Controle de Qualidade
 
 API do escopo de Pedro (B01–B07), baseada no `GP4_Plano_Detalhado_Pedro.pdf`.
@@ -12,7 +17,6 @@ Na raiz do repositório:
 ```sh
 cd backend
 cp .env.example .env
-php bin/create-admin.php
 php -d upload_max_filesize=5M -d post_max_size=6M -S 127.0.0.1:8000 -t public public/index.php
 ```
 
@@ -40,8 +44,7 @@ O servidor embutido é para desenvolvimento local.
 ```sh
 docker build -t gp4-backend .
 docker volume create gp4-state
-docker run --rm -it -v gp4-state:/app/var gp4-backend php bin/create-admin.php
-docker run --rm -p 127.0.0.1:8000:8000 -v gp4-state:/app/var gp4-backend
+docker run --rm -it -v gp4-state:/app/var gp4-backend docker run --rm -p 127.0.0.1:8000:8000 -v gp4-state:/app/var gp4-backend
 ```
 
 A imagem executa como `www-data`; o volume guarda o estado fora do ciclo de vida

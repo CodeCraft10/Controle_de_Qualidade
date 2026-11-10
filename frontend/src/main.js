@@ -1,11 +1,11 @@
-import '@fontsource/inter/400.css';
-import '@fontsource/inter/500.css';
-import '@fontsource/inter/600.css';
-import '@fontsource/inter/700.css';
+import '@fontsource/inter/latin-400.css';
+import '@fontsource/inter/latin-500.css';
+import '@fontsource/inter/latin-600.css';
+import '@fontsource/inter/latin-700.css';
 import './styles.css';
 import { api } from './api.js';
-import { getUser, canManage, setSession, clearSession } from './session.js';
-import { esc, loading, notify } from './ui.js';
+import { getUser, canManage, setSession } from './session.js';
+import { esc, loading } from './ui.js';
 import { mountCatalog } from './pages/catalog.js';
 import { mountInspections } from './pages/inspections.js';
 import { mountNonconformities } from './pages/nonconformities.js';
@@ -14,9 +14,7 @@ import { mountDashboard, mountHistory } from './pages/reporting.js';
 const app = document.querySelector('#app');
 let demoSessionPromise;
 async function tryDemoSession() {
-  demoSessionPromise ??= api.request('/config').then(async (config) => {
-    if (config.demo_mode) setSession(await api.request('/auth/demo', { method: 'POST' }));
-  });
+  demoSessionPromise ??= api.request('/auth/demo', { method: 'POST' }).then(setSession);
   await demoSessionPromise;
 }
 const shield =
@@ -40,7 +38,6 @@ const icon = (path) =>
   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${path}"/></svg>`;
 let cleanup;
 let generation = 0;
-let loginNotice = '';
 let mountedHash = '';
 
 function navItem(key, current) {
@@ -58,20 +55,8 @@ function shell(current) {
     </aside>
     <button class="nav-backdrop" aria-label="Fechar navegação" tabindex="-1"></button>
     <div class="main-shell"><header class="topbar"><div class="topbar-start"><button class="icon-button mobile-menu" aria-controls="navigation" aria-expanded="false" aria-label="Abrir navegação">${icon('M4 6h16 M4 12h16 M4 18h16')}</button><span class="breadcrumb">Workspace <span>/</span> <strong>${esc(paths[current]?.[0] || 'Navegação')}</strong></span></div>
-      <div class="user-menu"><span class="avatar" aria-hidden="true">${esc(user.nome.slice(0, 2).toUpperCase())}</span><span class="user-info"><strong>${esc(user.nome)}</strong><small>${esc({ admin: 'Administrador', supervisor: 'Supervisor', inspetor: 'Inspetor' }[user.perfil])}</small></span>${user.demo ? '<span class="badge">Modo demonstração</span>' : `<button class="logout-button" id="logout">Sair ${icon('M9 3H4v18h5 M14 8l5 4-5 4 M8 12h11')}</button>`}</div>
-    </header>${user.demo ? '<div class="notice" role="status" style="margin:16px 24px 0">Modo demonstração: acesso sem login. Use somente dados de teste.</div>' : ''}<main id="main-content" tabindex="-1"></main><footer class="main-footer"><span>GP4 · Sistema Inteligente de Controle de Qualidade</span><span>Registro. Evidência. Confiança.</span></footer></div></div>`;
-  document.querySelector('#logout')?.addEventListener('click', async (event) => {
-    const currentPage = document.querySelector('#main-content');
-    if (currentPage?.canLeave && !currentPage.canLeave()) return;
-    event.currentTarget.disabled = true;
-    try {
-      await api.request('/auth/logout', { method: 'POST' });
-      clearSession();
-    } catch (error) {
-      notify(error.message);
-      if (getUser()) document.querySelector('#logout').disabled = false;
-    }
-  });
+      <div class="user-menu"><span class="avatar" aria-hidden="true">${esc(user.nome.slice(0, 2).toUpperCase())}</span><span class="user-info"><strong>${esc(user.nome)}</strong><small>${esc({ admin: 'Administrador', supervisor: 'Supervisor', inspetor: 'Inspetor' }[user.perfil])}</small></span><span class="badge">Versão de teste</span></div>
+    </header><div class="notice" role="status" style="margin:16px 24px 0">Versão de teste aberta: use somente dados fictícios.</div><main id="main-content" tabindex="-1"></main><footer class="main-footer"><span>GP4 · Sistema Inteligente de Controle de Qualidade</span><span>Registro. Evidência. Confiança.</span></footer></div></div>`;
   const menu = document.querySelector('.mobile-menu');
   const closeMenu = () => {
     document.querySelector('.app-shell')?.classList.remove('nav-open');
@@ -95,55 +80,6 @@ function shell(current) {
   return document.querySelector('#main-content');
 }
 
-function mountLogin() {
-  const mountedGeneration = generation;
-  const controller = new AbortController();
-  let submitting = false;
-  document.title = 'Entrar | GP4 Controle de Qualidade';
-  app.innerHTML = `<main class="login-layout"><section class="login-story"><a class="brand" href="#/login">${shield}<span><strong>GP4<span class="brand-dot">.</span></strong><small>CONTROLE DE QUALIDADE</small></span></a><div class="login-story-content"><span class="eyebrow">PRECISÃO EM CADA PROCESSO</span><h1>Qualidade que<br>você acompanha.<br><em>Confiança que<br>você entrega.</em></h1><p>Inspeções, evidências e decisões conectadas.<br>Todo o seu controle de qualidade em um só lugar.</p><div class="login-benefits"><span>✓ Histórico rastreável</span><span>✓ Gestão centralizada</span></div></div><p class="login-story-footer">GP4 / Sistema Inteligente de Controle de Qualidade</p><div class="orb orb-one"></div><div class="orb orb-two"></div></section>
-    <section class="login-panel"><div class="login-form-wrap"><span class="login-shield">${shield}</span><p class="eyebrow">BEM-VINDO AO GP4</p><h2>Acesse seu workspace</h2><p class="muted">Entre com sua conta para continuar.</p>${loginNotice ? `<div class="notice" role="status">${esc(loginNotice)}</div>` : ''}<form id="login-form"><div class="field"><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="username" placeholder="voce@empresa.com.br" maxlength="254" required /></div><div class="field"><label for="senha">Senha</label><div class="password-input"><input id="senha" name="senha" type="password" autocomplete="current-password" required maxlength="72" /><button type="button" id="toggle-password" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div></div><p id="login-error" class="error" role="alert"></p><button class="button login-submit" type="submit">Entrar no sistema <span aria-hidden="true">→</span></button></form><p class="login-help">Precisa de acesso? Fale com o administrador<br>responsável pelo controle de qualidade.</p></div><p class="login-bottom">Acesso individual · Informações protegidas</p></section></main>`;
-  loginNotice = '';
-  const form = document.querySelector('#login-form');
-  const errorMessage = form.querySelector('#login-error');
-  const isCurrent = () =>
-    mountedGeneration === generation && form.isConnected && !controller.signal.aborted;
-  document.querySelector('#toggle-password').addEventListener('click', (event) => {
-    const input = form.elements.senha;
-    const show = input.type === 'password';
-    input.type = show ? 'text' : 'password';
-    event.currentTarget.textContent = show ? 'Ocultar' : 'Mostrar';
-    event.currentTarget.setAttribute('aria-pressed', String(show));
-    event.currentTarget.setAttribute('aria-label', show ? 'Ocultar senha' : 'Mostrar senha');
-  });
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    if (submitting || !isCurrent()) return;
-    submitting = true;
-    const button = form.querySelector('[type="submit"]');
-    button.disabled = true;
-    button.textContent = 'Entrando…';
-    errorMessage.textContent = '';
-    try {
-      const result = await api.request('/auth/login', {
-        method: 'POST',
-        body: { email: form.elements.email.value.trim(), senha: form.elements.senha.value },
-        signal: controller.signal,
-      });
-      if (!isCurrent()) return;
-      form.elements.senha.value = '';
-      setSession(result);
-      location.hash = '#/dashboard';
-    } catch (error) {
-      if (!isCurrent()) return;
-      submitting = false;
-      errorMessage.textContent = error.message;
-      button.disabled = false;
-      button.innerHTML = 'Entrar no sistema <span aria-hidden="true">→</span>';
-    }
-  });
-  return () => controller.abort();
-}
-
 async function route() {
   const previousPage = document.querySelector('#main-content');
   if (getUser() && previousPage?.canLeave && !previousPage.canLeave()) {
@@ -160,20 +96,17 @@ async function route() {
     .split('/')
     .filter(Boolean);
   if (!getUser()) {
+    app.innerHTML = loading();
     try {
       await tryDemoSession();
     } catch (error) {
-      loginNotice = error.message;
-    }
-    if (currentGeneration !== generation) return;
-  }
-  if (!getUser()) {
-    if (name !== 'login') {
-      location.replace('#/login');
+      if (currentGeneration !== generation) return;
+      demoSessionPromise = undefined;
+      app.innerHTML = `<main class="card"><h1>Não foi possível abrir o painel</h1><p role="alert">${esc(error.message)}</p><button class="button" id="retry-start">Tentar novamente</button></main>`;
+      document.querySelector('#retry-start').addEventListener('click', route);
       return;
     }
-    cleanup = mountLogin();
-    return;
+    if (currentGeneration !== generation) return;
   }
   if (name === 'login') {
     location.replace('#/dashboard');
@@ -210,10 +143,8 @@ async function route() {
   }
 }
 window.addEventListener('hashchange', route);
-window.addEventListener('session-ended', (event) => {
-  loginNotice = event.detail;
+window.addEventListener('session-ended', () => {
   demoSessionPromise = undefined;
-  if (location.hash === '#/login') route();
-  else location.replace('#/login');
+  route();
 });
 route();

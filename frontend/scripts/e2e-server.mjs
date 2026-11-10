@@ -9,10 +9,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const php = process.env.PHP_BIN || 'php';
 const temp = await mkdtemp(path.join(os.tmpdir(), 'gp4-integrado-'));
 const stateFile = path.join(root, 'frontend/.e2e/session.json');
-const isDemo = process.env.E2E_DEMO === '1';
 const env = {
   ...process.env,
-  DEMO_MODE: isDemo ? 'true' : 'false',
   STORAGE_PATH: path.join(temp, 'state.json'),
 };
 const accounts = Object.fromEntries(
@@ -42,7 +40,7 @@ async function cleanup(code = 0) {
 process.on('SIGINT', () => cleanup());
 process.on('SIGTERM', () => cleanup());
 try {
-  if (!isDemo) {
+  {
     const seed = spawnSync(php, [path.join(root, 'backend/tests/fixtures/e2e-seed.php')], {
       env,
       input: JSON.stringify(accounts),

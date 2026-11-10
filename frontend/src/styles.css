@@ -794,176 +794,6 @@ details {
 details[open] > summary {
   margin-bottom: 20px;
 }
-.login-layout {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1.05fr 1fr;
-}
-.login-story {
-  position: relative;
-  overflow: hidden;
-  background: var(--navy);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  padding: 50px 60px;
-  min-height: 100vh;
-}
-.login-story .brand {
-  padding: 0;
-  position: relative;
-  z-index: 1;
-}
-.login-story-content {
-  margin: auto 0;
-  padding: 65px 0;
-  position: relative;
-  z-index: 1;
-}
-.login-story .eyebrow {
-  color: #96baff;
-  letter-spacing: 2.7px;
-  font-size: 9px;
-  margin-bottom: 25px;
-}
-.login-story h1 {
-  font-size: clamp(32px, 3.6vw, 56px);
-  line-height: 1.18;
-  letter-spacing: -2px;
-  font-weight: 600;
-  color: #fff;
-}
-.login-story h1 em {
-  font-style: normal;
-  color: #8eaff1;
-}
-.login-story-content > p {
-  font-size: 12px;
-  color: #b3c4da;
-  line-height: 1.9;
-  margin-top: 26px;
-}
-.login-benefits {
-  display: flex;
-  gap: 24px;
-  font-size: 10px;
-  color: #c9d9ed;
-  margin-top: 35px;
-}
-.login-story-footer {
-  margin: 0;
-  font-size: 9px;
-  color: #8ca3bf;
-  z-index: 1;
-}
-.orb {
-  position: absolute;
-  border: 1px solid #ffffff08;
-  border-radius: 50%;
-  pointer-events: none;
-}
-.orb-one {
-  width: 700px;
-  height: 700px;
-  bottom: -280px;
-  right: -400px;
-  box-shadow:
-    0 0 0 60px #ffffff02,
-    0 0 0 120px #ffffff02,
-    0 0 0 180px #ffffff02;
-}
-.orb-two {
-  width: 350px;
-  height: 350px;
-  top: -210px;
-  left: 80px;
-}
-.login-panel {
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 55px 38px;
-  position: relative;
-}
-.login-form-wrap {
-  width: 100%;
-  max-width: 350px;
-}
-.login-shield {
-  display: grid;
-  place-items: center;
-  background: #edf3ff;
-  border-radius: 13px;
-  color: var(--blue);
-  width: 52px;
-  height: 56px;
-  margin-bottom: 35px;
-}
-.login-shield svg {
-  width: 28px;
-  height: 32px;
-}
-.login-panel h2 {
-  font-size: 27px;
-  letter-spacing: -1px;
-  margin-bottom: 10px;
-}
-.login-panel .eyebrow {
-  font-size: 9px;
-  color: #6484b2;
-  letter-spacing: 1.7px;
-}
-.login-panel .muted {
-  font-size: 12px;
-}
-.login-panel form {
-  margin-top: 30px;
-}
-.login-panel .field {
-  margin-bottom: 20px;
-}
-.login-panel input {
-  min-height: 47px;
-  font-size: 12px;
-}
-.password-input {
-  position: relative;
-}
-.password-input input {
-  padding-right: 72px;
-}
-.password-input button {
-  position: absolute;
-  right: 10px;
-  top: 9px;
-  height: 30px;
-  border: 0;
-  background: none;
-  color: #526a8b;
-  font-size: 10px;
-}
-.login-submit {
-  width: 100%;
-  min-height: 47px;
-  justify-content: space-between;
-  margin-top: 5px;
-  font-size: 12px;
-}
-.login-help {
-  text-align: center;
-  font-size: 10px;
-  line-height: 1.8;
-  color: #8190a3;
-  margin-top: 30px;
-}
-.login-bottom {
-  position: absolute;
-  bottom: 24px;
-  font-size: 9px;
-  color: #8b98a9;
-}
 @media (min-width: 1600px) {
   .main-shell main {
     max-width: 1500px;
@@ -992,9 +822,6 @@ details[open] > summary {
   }
   .metric-card {
     padding: 16px;
-  }
-  .login-story {
-    padding: 40px;
   }
   .split {
     grid-template-columns: 1fr;
@@ -1031,28 +858,6 @@ details[open] > summary {
   }
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .login-layout {
-    grid-template-columns: 1fr 1fr;
-  }
-  .login-story {
-    padding: 32px;
-  }
-  .login-story h1 {
-    font-size: 36px;
-  }
-  .login-benefits {
-    flex-direction: column;
-    gap: 12px;
-  }
-  .login-story-content > p br {
-    display: none;
-  }
-  .login-panel {
-    padding: 32px 25px;
-  }
-  .login-panel h2 {
-    font-size: 24px;
   }
 }
 @media (max-width: 580px) {
@@ -1140,34 +945,6 @@ details[open] > summary {
   .button {
     min-height: 42px;
     font-size: 11px;
-  }
-  .login-layout {
-    display: block;
-  }
-  .login-story {
-    min-height: 0;
-    padding: 25px 28px;
-  }
-  .login-story .brand {
-    transform: scale(0.85);
-    transform-origin: left center;
-  }
-  .login-story-content,
-  .login-story-footer {
-    display: none;
-  }
-  .login-panel {
-    min-height: calc(100vh - 95px);
-    padding: 42px 28px 70px;
-  }
-  .login-shield {
-    margin-bottom: 25px;
-  }
-  .login-panel h2 {
-    font-size: 26px;
-  }
-  .login-bottom {
-    bottom: 12px;
   }
   .route-error {
     padding: 24px;

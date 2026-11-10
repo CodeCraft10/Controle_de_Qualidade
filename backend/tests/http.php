@@ -30,7 +30,7 @@ function multipart(string $bytes, string $filename = 'foto.png', string $mime = 
     return ["--$boundary\r\nContent-Disposition: form-data; name=\"arquivo\"; filename=\"$filename\"\r\nContent-Type: $mime\r\n\r\n$bytes\r\n--$boundary--\r\n", "multipart/form-data; boundary=$boundary"];
 }
 $temp = sys_get_temp_dir() . '/gp4-http-' . bin2hex(random_bytes(8)); mkdir($temp, 0700);
-$path = $temp . '/state.json'; $store = new JsonStore($path);
+$path = $temp . '/state.json'; $store = new JsonStore($path . '.demo.json');
 $store->transaction(fn(array &$s) => Auth::create($s, ['nome' => 'Teste HTTP', 'email' => 'admin@example.test', 'senha' => 'Teste-local-12345', 'perfil' => 'admin']));
 $socket = stream_socket_server('tcp://127.0.0.1:0', $errno, $error);
 $address = stream_socket_get_name($socket, false); fclose($socket);

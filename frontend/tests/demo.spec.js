@@ -5,7 +5,7 @@ test('entra sem credenciais, cadastra produto e continua após recarregar', asyn
   await expect(page.getByRole('heading', { name: 'Visão geral', exact: true })).toBeVisible();
   await expect(page.getByLabel('E-mail', { exact: true })).toHaveCount(0);
   await expect(
-    page.getByText('Modo demonstração: acesso sem login. Use somente dados de teste.', {
+    page.getByText('Versão de teste aberta: use somente dados fictícios.', {
       exact: true,
     }),
   ).toBeVisible();
