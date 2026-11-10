@@ -1,0 +1,7 @@
+{
+  "name": "gp4/backend-php",
+  "description": "API de controle de qualidade — backend de Pedro",
+  "type": "project",
+  "require": {"php": ">=8.2", "ext-json": "*", "ext-fileinfo": "*"},
+  "scripts": {"start": "php -S 127.0.0.1:8000 -t public public/index.php", "test": "php tests/run.php"}
+}
