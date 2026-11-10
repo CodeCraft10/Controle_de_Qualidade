@@ -20,7 +20,7 @@ final class Evidence {
         if (count($existing) >= 10) throw new ApiError(409, 'Limite de 10 fotos por desvio');
         $bytes = file_get_contents($file['tmp_name']);
         if ($bytes === false) throw new \RuntimeException('upload read failed');
-        $e = Records::add($s, 'evidencias', ['nao_conformidade_id' => $id, 'mime' => $mime, 'tamanho' => $size,
+        $e = Records::add($s, 'evidencias', ['nao_conformidade_id' => $id, 'nome_original' => substr(preg_replace('/[\x00-\x1f\x7f]/', '', basename(str_replace('\\', '/', (string)($file['name'] ?? 'foto')))), 0, 200), 'mime' => $mime, 'tamanho' => $size,
             'sha256' => hash('sha256', $bytes), 'conteudo_base64' => base64_encode($bytes)]);
         Records::audit($s, $u['id'], 'anexar', 'nao_conformidades', $id); return self::metadata($e);
     }

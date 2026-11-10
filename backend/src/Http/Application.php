@@ -15,6 +15,26 @@ final class Application {
             if ($path === '/api/auth/logout' && $method === 'POST') {
                 unset($s['tokens'][hash('sha256', $token)]); return [204, null, []];
             }
+            if (preg_match('#^/api/checklists/([1-9][0-9]{0,8})/itens(?:/([1-9][0-9]{0,8}))?$#', $path, $m)) {
+                $id = Rules::id($m[1]); $check = Records::get($s, 'checklists', $id);
+                if ($method === 'GET' && !isset($m[2])) {
+                    $items = array_map(fn($item) => [...$item, 'criterio' => Records::get($s, 'criterios', $item['criterio_id'])['nome']], $check['itens']);
+                    return [200, ['data' => $items], []];
+                }
+                Auth::role($u, ['admin', 'supervisor']);
+                if ($method === 'POST' && !isset($m[2])) {
+                    $saved = Catalog::save($s, $u, 'checklists', ['itens' => [...$check['itens'], $body]], $id);
+                    return [201, $saved['itens'][array_key_last($saved['itens'])], []];
+                }
+                if ($method === 'DELETE' && isset($m[2])) {
+                    $itemId = Rules::id($m[2]);
+                    $items = array_values(array_filter($check['itens'], fn($item) => $item['id'] !== $itemId));
+                    if (count($items) === count($check['itens'])) throw new ApiError(404, 'Item não encontrado');
+                    Catalog::save($s, $u, 'checklists', ['itens' => $items], $id);
+                    return [204, null, []];
+                }
+                throw new ApiError(405, 'Método não permitido');
+            }
             if (preg_match('#^/api/(produtos|lotes|criterios|checklists|usuarios|inspetores)(?:/([1-9][0-9]{0,8}))?$#', $path, $m)) {
                 $resource = $m[1]; $table = $resource === 'inspetores' ? 'usuarios' : $resource;
                 if ($table === 'usuarios') Auth::role($u, $resource === 'inspetores' ? ['admin', 'supervisor'] : ['admin']);
@@ -68,7 +88,7 @@ final class Application {
             }
             if (in_array($path, ['/api/indicadores', '/api/relatorios/inspecoes', '/api/relatorios/inspecoes.csv'], true) && $method === 'GET') {
                 $rows = Queries::filtered($s, $u, 'inspecoes', $query);
-                if ($path === '/api/indicadores') return [200, Queries::metrics($rows), []];
+                if ($path === '/api/indicadores') return [200, [...Queries::metrics($rows), 'nao_conformidades' => count(array_filter($s['nao_conformidades'], fn($n) => in_array($n['inspecao_id'], array_column($rows, 'id'), true)))], []];
                 $page = Queries::page($rows, $query, ['id', 'criado_em', 'iniciada_em', 'status']);
                 if (str_ends_with($path, '.csv')) return [200, Queries::csv($page['data']), ['Content-Type' => 'text/csv; charset=utf-8', 'Content-Disposition' => 'attachment; filename="inspecoes.csv"']];
                 return [200, $page, []];

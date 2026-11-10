@@ -3,7 +3,7 @@
 Base local: `http://127.0.0.1:8000/api`. JSON UTF-8, nomes em português.
 Todas as rotas exigem `Authorization: Bearer TOKEN`, exceto saúde e login.
 Envie `Content-Type: application/json` nos corpos JSON. Fotos usam multipart.
-Não há CORS nesta etapa: o frontend não está integrado.
+A interface e a API compartilham a origem via `public/index.php`; não é necessário CORS.
 
 ## Endpoints
 
@@ -155,3 +155,16 @@ Indicadores:
 ```json
 {"total":2,"em_andamento":0,"aprovadas":1,"reprovadas":1,"taxa_aprovacao":50,"taxa_reprovacao":50}
 ```
+
+## Integração da interface
+
+`POST /checklists` aceita `itens` ausente/vazio para criar um rascunho. A abertura
+de inspeção continua exigindo checklist com itens ativos. `GET /checklists/{id}/itens`
+retorna `{data:[...]}` com id local, criterio_id, criterio e obrigatorio. Gestores
+podem adicionar com POST nesse caminho e remover com DELETE `/checklists/{id}/itens/{item_id}`
+somente antes de o checklist ser usado em inspeção. A operação preserva as mesmas
+regras de autorização, unicidade e histórico da atualização do cadastro.
+
+Indicadores incluem `finalizadas` e `nao_conformidades` no escopo dos filtros e
+da autorização. Fotos também incluem `nome_original` sanitizado para exibição;
+o caminho de acesso continua `/evidencias/{id}`, autenticado.

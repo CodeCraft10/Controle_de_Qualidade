@@ -50,7 +50,7 @@ function options(rows, text) {
 function filtersMarkup() {
   return `<form class="card report-filters" data-report-filters aria-label="Filtros de inspeções">
     <div class="report-primary-filters">
-      <div class="field report-search-field"><label for="report-search">Pesquisar produto ou lote</label><input id="report-search" name="busca" type="search" maxlength="100" placeholder="Nome do produto ou código do lote"></div>
+      <div class="field report-search-field"><label for="report-search">Pesquisar produto ou lote</label><input id="report-search" name="q" type="search" maxlength="100" placeholder="Nome do produto ou código do lote"></div>
       <div class="field"><label for="report-from">Data inicial</label><input id="report-from" name="de" type="date"></div>
       <div class="field"><label for="report-to">Data final</label><input id="report-to" name="ate" type="date"></div>
     </div>
@@ -61,7 +61,7 @@ function filtersMarkup() {
         <div class="field"><label for="report-inspector">Responsável pela inspeção</label><select id="report-inspector" name="inspetor_id" disabled><option value="">Carregando responsáveis…</option></select></div>
         <div class="field"><label for="report-status">Resultado</label><select id="report-status" name="status"><option value="">Todos os resultados</option><option value="em_andamento">Em andamento</option><option value="aprovada">Aprovada</option><option value="reprovada">Reprovada</option></select></div>
       </div>
-      ${canManage() ? '' : '<p class="muted report-help">No filtro de responsável, você pode consultar todas as inspeções ou somente as suas.</p>'}
+      ${canManage() ? '' : '<p class="muted report-help">No filtro de responsável, você pode consultar somente as suas inspeções.</p>'}
       <div class="report-lookup-note notice" role="status"></div>
     </details>
     <div class="report-filter-error notice error" role="alert"></div>
@@ -76,10 +76,13 @@ function errorMarkup(error) {
 function filterValues(form) {
   const values = Object.fromEntries(
     [...new FormData(form)]
-      .map(([key, value]) => [key, String(value).trim()])
+      .map(([key, value]) => [
+        { de: 'data_inicio', ate: 'data_fim' }[key] || key,
+        String(value).trim(),
+      ])
       .filter(([, value]) => value),
   );
-  if (values.de && values.ate && values.de > values.ate)
+  if (values.data_inicio && values.data_fim && values.data_inicio > values.data_fim)
     throw new Error('A data final deve ser igual ou posterior à data inicial.');
   return values;
 }
@@ -94,10 +97,10 @@ function inspectionTable(rows, { compact = false } = {}) {
   return `<div class="table-wrap"><table><caption class="sr-only">Inspeções consultadas na API</caption><thead><tr><th scope="col">Inspeção / lote</th><th scope="col">Produto</th>${compact ? '' : '<th scope="col">Responsável</th><th scope="col">Checklist</th>'}<th scope="col">Abertura</th>${compact ? '' : '<th scope="col">Conclusão</th>'}<th scope="col">Resultado</th><th scope="col"><span class="sr-only">Ações</span></th></tr></thead><tbody>${rows
     .map(
       (row) => `<tr>
-    <td><span class="report-cell-main">${esc(row.lote)}</span><span class="report-cell-sub">Inspeção #${esc(row.id)}</span></td>
-    <td>${esc(row.produto)}</td>${compact ? '' : `<td>${esc(row.inspetor)}</td><td>${esc(row.checklist)}</td>`}
+    <td><span class="report-cell-main">${esc(row.lote_codigo)}</span><span class="report-cell-sub">Inspeção #${esc(row.id)}</span></td>
+    <td>${esc(row.produto_nome)}</td>${compact ? '' : `<td>${esc(row.inspetor_id)}</td><td>${esc(row.checklist_nome)}</td>`}
     <td>${esc(formatDate(row.iniciada_em))}</td>${compact ? '' : `<td>${row.finalizada_em ? esc(formatDate(row.finalizada_em)) : '<span class="muted">Em andamento</span>'}</td>`}
-    <td>${badge(row.status)}</td><td><a class="button secondary" href="#/inspecoes/${encodeURIComponent(row.id)}" aria-label="Ver inspeção ${esc(row.id)} do lote ${esc(row.lote)}">Ver</a></td>
+    <td>${badge(row.status)}</td><td><a class="button secondary" href="#/inspecoes/${encodeURIComponent(row.id)}" aria-label="Ver inspeção ${esc(row.id)} do lote ${esc(row.lote_codigo)}">Ver</a></td>
   </tr>`,
     )
     .join('')}</tbody></table></div>`;
@@ -205,10 +208,10 @@ async function mountReporting(root, mode) {
     note.textContent = '';
     const user = getUser();
     const outcomes = await Promise.allSettled([
-      api.all('/produtos?ordenar=nome&direcao=asc', { signal: controller.signal }),
-      api.all('/lotes?ordenar=codigo&direcao=asc', { signal: controller.signal }),
+      api.all('/produtos?sort=id&order=asc', { signal: controller.signal }),
+      api.all('/lotes?sort=id&order=asc', { signal: controller.signal }),
       canManage()
-        ? api.all('/usuarios?ordenar=nome&direcao=asc', { signal: controller.signal })
+        ? api.all('/inspetores?sort=id&order=asc', { signal: controller.signal })
         : Promise.resolve([{ id: user.id, nome: 'Minhas inspeções' }]),
     ]);
     if (!active || controller.signal.aborted) return;
@@ -264,7 +267,7 @@ async function mountReporting(root, mode) {
         const [data, recent] = await Promise.all([
           api.request(`/indicadores?${query(applied)}`, { signal: controller.signal }),
           api.request(
-            `/relatorios/inspecoes?${query(applied, { page: 1, limit: 5, ordenar: 'iniciada_em', direcao: 'desc' })}`,
+            `/relatorios/inspecoes?${query(applied, { page: 1, limit: 5, sort: 'iniciada_em', order: 'desc' })}`,
             { signal: controller.signal },
           ),
         ]);
@@ -273,7 +276,7 @@ async function mountReporting(root, mode) {
         live.textContent = `${number.format(data.total)} inspeções nos filtros aplicados. Dados atualizados agora.`;
       } else {
         const response = await api.request(
-          `/relatorios/inspecoes?${query(applied, { page, limit, ordenar: 'iniciada_em', direcao: 'desc' })}`,
+          `/relatorios/inspecoes?${query(applied, { page, limit, sort: 'iniciada_em', order: 'desc' })}`,
           { signal: controller.signal },
         );
         if (!active || currentGeneration !== generation) return;
@@ -301,7 +304,7 @@ async function mountReporting(root, mode) {
     const exportFilters = { ...applied };
     try {
       const blob = await api.blob(
-        `/relatorios/inspecoes?${query(exportFilters, { formato: 'csv', page: exportPageNumber, limit: exportLimit, ordenar: 'iniciada_em', direcao: 'desc' })}`,
+        `/relatorios/inspecoes.csv?${query(exportFilters, { formato: 'csv', page: exportPageNumber, limit: exportLimit, sort: 'iniciada_em', order: 'desc' })}`,
         { signal: exportController.signal },
       );
       if (!active) return;

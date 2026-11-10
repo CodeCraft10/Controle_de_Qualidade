@@ -65,15 +65,20 @@ final class Catalog {
             if ($id === 0) $row['status'] = 'pendente';
         }
         if ($table === 'checklists') {
-            $items = $b['itens'] ?? null;
-            if (!is_array($items) || !array_is_list($items) || !$items || count($items) > 200) throw new ApiError(422, 'Checklist deve ter de 1 a 200 itens');
-            $seen = []; $row['itens'] = [];
+            $items = $b['itens'] ?? [];
+            if (!is_array($items) || !array_is_list($items) || count($items) > 200) throw new ApiError(422, 'Checklist deve ter até 200 itens');
+            $seen = []; $row['itens'] = []; $usedIds = [];
+            $nextId = 1;
+            foreach (($s['checklists'][$id]['itens'] ?? []) as $oldItem) $nextId = max($nextId, $oldItem['id'] + 1);
             foreach ($items as $item) {
                 if (!is_array($item)) throw new ApiError(422, 'Item inválido');
                 $criterion = Rules::id($item['criterio_id'] ?? null); Records::active($s, 'criterios', $criterion);
                 if (isset($seen[$criterion])) throw new ApiError(409, 'Critério duplicado no checklist');
                 $seen[$criterion] = true;
-                $row['itens'][] = ['id' => count($row['itens']) + 1, 'criterio_id' => $criterion, 'obrigatorio' => Rules::boolean($item['obrigatorio'] ?? true)];
+                $itemId = isset($item['id']) ? Rules::id($item['id']) : $nextId++;
+                if (isset($usedIds[$itemId])) throw new ApiError(422, 'ID de item duplicado');
+                $usedIds[$itemId] = true;
+                $row['itens'][] = ['id' => $itemId, 'criterio_id' => $criterion, 'obrigatorio' => Rules::boolean($item['obrigatorio'] ?? true)];
             }
         }
         return $row;

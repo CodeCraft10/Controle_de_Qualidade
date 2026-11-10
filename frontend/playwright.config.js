@@ -22,21 +22,11 @@ export default defineConfig({
       ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
       : {},
   },
-  webServer: [
-    {
-      command: 'node scripts/e2e-server.mjs',
-      url: 'http://127.0.0.1:3001/api/prontidao',
-      reuseExistingServer: false,
-      timeout: 30_000,
-      gracefulShutdown: { signal: 'SIGTERM', timeout: 10_000 },
-    },
-    {
-      command: 'npm run dev -- --host 127.0.0.1 --port 5173 --strictPort',
-      url: 'http://127.0.0.1:5173',
-      env: { API_PROXY_TARGET: 'http://127.0.0.1:3001' },
-      reuseExistingServer: false,
-      timeout: 30_000,
-      gracefulShutdown: { signal: 'SIGTERM', timeout: 10_000 },
-    },
-  ],
+  webServer: {
+    command: 'node scripts/e2e-server.mjs',
+    url: 'http://127.0.0.1:5173/api/health',
+    reuseExistingServer: false,
+    timeout: 30_000,
+    gracefulShutdown: { signal: 'SIGTERM', timeout: 10_000 },
+  },
 });

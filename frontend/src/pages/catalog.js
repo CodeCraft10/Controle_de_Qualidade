@@ -145,7 +145,11 @@ export async function mountCatalog(root, { resource, id } = {}) {
         type: 'number',
         required: true,
         min: 1,
-        max: 2147483647,
+        max: 999999999,
+      });
+      fields += inputField('Data de fabricação', 'data_fabricacao', record.data_fabricacao, {
+        type: 'date',
+        required: true,
       });
     } else if (resource === 'inspetores') {
       fields += inputField('E-mail', 'email', record.email, {
@@ -159,7 +163,7 @@ export async function mountCatalog(root, { resource, id } = {}) {
         required: isNew,
         maxLength: 72,
         autocomplete: 'new-password',
-        help: 'Mínimo de 8 caracteres e máximo de 72 bytes. A senha não será armazenada no navegador.',
+        help: 'Mínimo de 12 bytes e máximo de 72 bytes. A senha não será armazenada no navegador.',
       });
     } else {
       fields += `<div class="field full"><label for="catalog-descricao">Descrição</label><textarea id="catalog-descricao" name="descricao" rows="3" maxlength="2000">${esc(record.descricao || '')}</textarea></div>`;
@@ -208,8 +212,10 @@ export async function mountCatalog(root, { resource, id } = {}) {
       }
       const tasks = [
         id
-          ? api.request(`${endpoint}/${encodeURIComponent(id)}`)
-          : api.all(`${endpoint}${resource === 'inspetores' ? '?perfil=inspetor' : ''}`),
+          ? api.request(
+              `${resource === 'inspetores' ? '/inspetores' : endpoint}/${encodeURIComponent(id)}`,
+            )
+          : api.all(resource === 'inspetores' ? '/inspetores' : endpoint),
       ];
       tasks.push(resource === 'lotes' ? api.all('/produtos') : Promise.resolve([]));
       tasks.push(
@@ -264,8 +270,9 @@ export async function mountCatalog(root, { resource, id } = {}) {
     if (password) {
       password.setCustomValidity(
         password.value &&
-          (password.value.length < 8 || new TextEncoder().encode(password.value).length > 72)
-          ? 'A senha precisa ter ao menos 8 caracteres e no máximo 72 bytes.'
+          (new TextEncoder().encode(password.value).length < 12 ||
+            new TextEncoder().encode(password.value).length > 72)
+          ? 'A senha precisa ter ao menos 12 bytes e no máximo 72 bytes.'
           : '',
       );
     }
@@ -384,10 +391,10 @@ export async function mountCatalog(root, { resource, id } = {}) {
     button.textContent = 'Salvando…';
     try {
       if (action === 'toggle-active') {
-        current = await api.request(
-          `${endpoint}/${encodeURIComponent(id)}${resource === 'inspetores' ? '' : '/ativo'}`,
-          { method: 'PATCH', body: { ativo: !current.ativo } },
-        );
+        current = await api.request(`${endpoint}/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          body: { ativo: !current.ativo },
+        });
         if (!alive()) return;
         notify(
           current.ativo

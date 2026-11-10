@@ -59,14 +59,23 @@ disponibiliza visões analíticas em tempo real, mantendo histórico seguro e au
 
 ## ▶️ Executar o sistema
 
-Os componentes são mantidos em diretórios separados:
+A aplicação está integrada: `public/index.php` entrega a interface e encaminha `/api` ao backend PHP, usando uma única URL.
 
-- [Backend PHP](backend/README.md): API local em `http://127.0.0.1:8000/api`, criação de administrador, testes e contrato de endpoints.
-- [Frontend](frontend/README.md): arquivos da interface mantidos no repositório.
+Siga o [guia de instalação na VPS](docs/implantacao/VPS.md) para compilar, iniciar e criar a primeira conta. Com Docker Compose:
 
-O backend foi refeito em PHP conforme o plano individual de Pedro. Nesta etapa não há conexão com banco nem integração com frontend. A API usa armazenamento JSON local privado para permitir demonstrações e testes. Consulte o [guia de integração futura](backend/docs/INTEGRACAO_FUTURA.md) antes de conectar os componentes; os testes antigos de integração não comprovam compatibilidade com a nova API.
+```sh
+cp .env.example .env
+# Edite APP_BIND=0.0.0.0 em .env para abrir pelo IP da VPS privada.
+docker compose up -d --build
+docker compose exec --user www-data app php backend/bin/create-admin.php
+```
 
-Para executar e testar a parte de Pedro, siga exclusivamente o [README do backend](backend/README.md). O frontend permanece como componente separado.
+Acesse `http://IP_DA_VPS:8080/` após configurar a interface de escuta e o firewall. Não há senha padrão. O guia também cobre execução local, Nginx/PHP-FPM, backups e testes.
+
+- [Backend](backend/README.md): API, regras, armazenamento e testes PHP.
+- [Frontend](frontend/README.md): interface integrada e testes de navegador.
+
+A persistência permanece em JSON local privado, em volume persistente na instalação Docker. PostgreSQL é uma integração futura.
 
 A implementação do frontend corresponde às atividades F01–F07 do plano individual do João. As [rotas e os esboços](frontend/docs/ROTAS_E_TELAS.md), o [padrão visual](frontend/docs/DESIGN_SYSTEM.md) e a [matriz de validação](frontend/docs/VALIDACAO.md) registram as decisões e evidências. A cor azul foi normalizada de `#25663EB`, que não é um hexadecimal CSS válido, para `#2563EB`.
 

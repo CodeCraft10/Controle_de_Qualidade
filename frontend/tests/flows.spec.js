@@ -31,14 +31,14 @@ async function screenshot(page, filename) {
   await expect(page.locator('.toast')).toHaveCount(0, { timeout: 8000 });
   await expect(page.locator('.loading-state')).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
-  const directory = path.resolve('docs/screenshots');
+  const directory = path.resolve(process.env.E2E_SCREENSHOT_DIR || 'docs/screenshots');
   await mkdir(directory, { recursive: true });
   await page.screenshot({ path: path.join(directory, filename), fullPage: true });
 }
 
 async function api(request, role = 'admin') {
   const user = fixture.accounts[role];
-  const response = await request.post(fixture.apiURL + '/login', {
+  const response = await request.post(fixture.apiURL + '/auth/login', {
     data: { email: user.email, senha: user.password },
   });
   expect(response.ok()).toBeTruthy();
@@ -82,6 +82,7 @@ async function seedInspection(request, suffix, owner = 'inspetor') {
     codigo: 'L-' + suffix,
     produto_id: product.id,
     quantidade: 10,
+    data_fabricacao: '2026-11-10',
   });
   const criterion = await create('/criterios', { nome: 'Critério ' + suffix });
   const checklist = await create('/checklists', { nome: 'Checklist ' + suffix });
@@ -156,6 +157,7 @@ test('fluxo completo persiste cadastros, inspeção, desvio, foto, histórico e 
     codigo: 'L-E2E-001',
     produto_id: productId,
     quantidade: 20,
+    data_fabricacao: '2026-11-10',
   });
   await createCatalog(page, 'inspetores', 'inspetor', {
     nome: 'Inspetor cadastrado E2E',
@@ -310,9 +312,7 @@ test('perfis respeitam cadastros, usuários e autoria da inspeção', async ({ p
   await page.getByRole('button', { name: 'Sair', exact: true }).click();
   await login(page, 'outro');
   await route(page, `inspecoes/${seeded.inspection.id}`);
-  await expect(
-    page.getByText('Consulta da inspeção de outro responsável.', { exact: false }),
-  ).toBeVisible();
+  await expect(page.getByText('Inspeção de outro inspetor', { exact: false })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Salvar resposta', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Revisar conclusão', exact: true })).toHaveCount(0);
   expect(

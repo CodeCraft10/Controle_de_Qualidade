@@ -32,7 +32,7 @@ final class Queries {
             if (isset($q['data_inicio']) && $date < $q['data_inicio']) continue;
             if (isset($q['data_fim']) && $date > $q['data_fim']) continue;
             if (isset($q['q'])) {
-                $haystack = implode(' ', array_filter($row, 'is_scalar'));
+                $haystack = implode(' ', array_filter([...($i ?? []), ...$row], 'is_scalar'));
                 if (stripos($haystack, $q['q']) === false) continue;
             }
             $rows[] = $row;
@@ -55,7 +55,7 @@ final class Queries {
         $approved = count(array_filter($rows, fn($i) => $i['status'] === 'aprovada'));
         $failed = count(array_filter($rows, fn($i) => $i['status'] === 'reprovada'));
         $done = $approved + $failed;
-        return ['total' => count($rows), 'em_andamento' => count($rows) - $done, 'aprovadas' => $approved, 'reprovadas' => $failed,
+        return ['total' => count($rows), 'em_andamento' => count($rows) - $done, 'finalizadas' => $done, 'aprovadas' => $approved, 'reprovadas' => $failed,
             'taxa_aprovacao' => $done ? round($approved / $done * 100, 2) : 0,
             'taxa_reprovacao' => $done ? round($failed / $done * 100, 2) : 0];
     }
