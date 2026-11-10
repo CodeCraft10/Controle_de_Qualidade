@@ -76,7 +76,10 @@ function errorMarkup(error) {
 function filterValues(form) {
   const values = Object.fromEntries(
     [...new FormData(form)]
-      .map(([key, value]) => [{ de: 'data_inicio', ate: 'data_fim' }[key] || key, String(value).trim()])
+      .map(([key, value]) => [
+        { de: 'data_inicio', ate: 'data_fim' }[key] || key,
+        String(value).trim(),
+      ])
       .filter(([, value]) => value),
   );
   if (values.data_inicio && values.data_fim && values.data_inicio > values.data_fim)

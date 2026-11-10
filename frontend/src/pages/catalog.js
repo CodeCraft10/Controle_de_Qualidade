@@ -147,7 +147,10 @@ export async function mountCatalog(root, { resource, id } = {}) {
         min: 1,
         max: 999999999,
       });
-      fields += inputField('Data de fabricação', 'data_fabricacao', record.data_fabricacao, { type: 'date', required: true });
+      fields += inputField('Data de fabricação', 'data_fabricacao', record.data_fabricacao, {
+        type: 'date',
+        required: true,
+      });
     } else if (resource === 'inspetores') {
       fields += inputField('E-mail', 'email', record.email, {
         type: 'email',
@@ -209,7 +212,9 @@ export async function mountCatalog(root, { resource, id } = {}) {
       }
       const tasks = [
         id
-          ? api.request(`${resource === 'inspetores' ? '/inspetores' : endpoint}/${encodeURIComponent(id)}`)
+          ? api.request(
+              `${resource === 'inspetores' ? '/inspetores' : endpoint}/${encodeURIComponent(id)}`,
+            )
           : api.all(resource === 'inspetores' ? '/inspetores' : endpoint),
       ];
       tasks.push(resource === 'lotes' ? api.all('/produtos') : Promise.resolve([]));
@@ -265,7 +270,8 @@ export async function mountCatalog(root, { resource, id } = {}) {
     if (password) {
       password.setCustomValidity(
         password.value &&
-          (new TextEncoder().encode(password.value).length < 12 || new TextEncoder().encode(password.value).length > 72)
+          (new TextEncoder().encode(password.value).length < 12 ||
+            new TextEncoder().encode(password.value).length > 72)
           ? 'A senha precisa ter ao menos 12 bytes e no máximo 72 bytes.'
           : '',
       );
@@ -385,10 +391,10 @@ export async function mountCatalog(root, { resource, id } = {}) {
     button.textContent = 'Salvando…';
     try {
       if (action === 'toggle-active') {
-        current = await api.request(
-          `${endpoint}/${encodeURIComponent(id)}`,
-          { method: 'PATCH', body: { ativo: !current.ativo } },
-        );
+        current = await api.request(`${endpoint}/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          body: { ativo: !current.ativo },
+        });
         if (!alive()) return;
         notify(
           current.ativo

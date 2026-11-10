@@ -287,7 +287,13 @@ async function mountDetail(root, id) {
       inspection = await api.request(`/inspecoes/${id}`);
       inspection.itens = inspection.itens.map((item) => {
         const answer = inspection.respostas.find((r) => r.item_id === item.id);
-        return { ...item, item_id: item.id, resposta_id: answer?.id, resultado: answer?.resultado, observacao: answer?.observacao };
+        return {
+          ...item,
+          item_id: item.id,
+          resposta_id: answer?.id,
+          resultado: answer?.resultado,
+          observacao: answer?.observacao,
+        };
       });
       const [lot, checklist, found] = await Promise.all([
         api.request(`/lotes/${inspection.lote_id}`),

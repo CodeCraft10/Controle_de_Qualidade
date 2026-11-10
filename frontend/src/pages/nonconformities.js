@@ -53,7 +53,10 @@ export async function mountNonconformities(root, { id } = {}) {
       query = new URLSearchParams(
         Object.entries(values)
           .filter(([, value]) => value.trim())
-          .map(([key, value]) => [{ de: 'data_inicio', ate: 'data_fim' }[key] || key, value.trim()]),
+          .map(([key, value]) => [
+            { de: 'data_inicio', ate: 'data_fim' }[key] || key,
+            value.trim(),
+          ]),
       );
       page = 1;
       loadList();
@@ -210,10 +213,9 @@ export async function mountNonconformities(root, { id } = {}) {
             const preview = card.querySelector('[data-preview]');
             preview.innerHTML = loading();
             try {
-              const blob = await api.blob(
-                `/evidencias/${encodeURIComponent(evidence.id)}`,
-                { signal: controller.signal },
-              );
+              const blob = await api.blob(`/evidencias/${encodeURIComponent(evidence.id)}`, {
+                signal: controller.signal,
+              });
               if (disposed || !card.isConnected) return;
               cachedBlob = blob;
               const url = URL.createObjectURL(blob);

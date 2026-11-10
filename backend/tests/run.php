@@ -42,7 +42,9 @@ try {
     $l = $call('POST', '/api/lotes', ['codigo' => '=LOT', 'produto_id' => $p['id'], 'quantidade' => 10, 'data_fabricacao' => '2026-01-01'], $a);
     $c = $call('POST', '/api/criterios', ['nome' => 'Acabamento'], $a);
     $c2 = $call('POST', '/api/criterios', ['nome' => 'Dimensão'], $a);
-    fails(fn() => $call('POST', '/api/checklists', ['nome' => 'Vazio', 'itens' => []], $a), 422, 'checklist vazio');
+    $draft = $call('POST', '/api/checklists', ['nome' => 'Vazio', 'itens' => []], $a);
+    check($draft['itens'] === [], 'checklist vazio pode ser salvo como rascunho');
+    fails(fn() => $call('POST', '/api/inspecoes', ['lote_id' => $l['id'], 'checklist_id' => $draft['id']], $i), 409, 'checklist vazio não pode iniciar inspeção');
     fails(fn() => $call('POST', '/api/checklists', ['nome' => 'Duplicado', 'itens' => [['criterio_id' => $c['id']], ['criterio_id' => $c['id']]]], $a), 409, 'itens duplicados');
     $cl = $call('POST', '/api/checklists', ['nome' => 'Padrão', 'itens' => [['criterio_id' => $c['id']], ['criterio_id' => $c2['id']]]], $a);
     $inspection = $call('POST', '/api/inspecoes', ['lote_id' => $l['id'], 'checklist_id' => $cl['id']], $i); $id = $inspection['id'];
