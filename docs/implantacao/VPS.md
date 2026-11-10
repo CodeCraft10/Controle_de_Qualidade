@@ -125,6 +125,7 @@ O usuário do PHP deve poder escrever em `backend/var/`:
 ```sh
 sudo chown -R www-data:www-data backend/var
 sudo chmod 700 backend/var
+sudo -u www-data php backend/bin/create-admin.php
 ```
 
 O `DocumentRoot` precisa ser a pasta **`public/`**, nunca a raiz do repositório.

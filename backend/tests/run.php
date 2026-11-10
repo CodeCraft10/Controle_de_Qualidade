@@ -46,9 +46,16 @@ try {
     check($draft['itens'] === [], 'checklist vazio pode ser salvo como rascunho');
     fails(fn() => $call('POST', '/api/inspecoes', ['lote_id' => $l['id'], 'checklist_id' => $draft['id']], $i), 409, 'checklist vazio não pode iniciar inspeção');
     fails(fn() => $call('POST', '/api/checklists', ['nome' => 'Duplicado', 'itens' => [['criterio_id' => $c['id']], ['criterio_id' => $c['id']]]], $a), 409, 'itens duplicados');
+    $draftItem = $call('POST', '/api/checklists/' . $draft['id'] . '/itens', ['criterio_id' => $c['id']], $a);
+    check($call('GET', '/api/checklists/' . $draft['id'] . '/itens', [], $a)['data'][0]['criterio'] === 'Acabamento', 'itens consultáveis pela interface');
+    fails(fn() => $call('POST', '/api/checklists/' . $draft['id'] . '/itens', ['criterio_id' => $c['id']], $a), 409, 'adição de item duplicado bloqueada');
+    fails(fn() => $call('POST', '/api/checklists/' . $draft['id'] . '/itens', ['criterio_id' => $c2['id']], $i), 403, 'inspetor não edita itens do checklist');
+    $call('DELETE', '/api/checklists/' . $draft['id'] . '/itens/' . $draftItem['id'], [], $a);
+    check($call('GET', '/api/checklists/' . $draft['id'] . '/itens', [], $a)['data'] === [], 'remoção do último item mantém rascunho');
     $cl = $call('POST', '/api/checklists', ['nome' => 'Padrão', 'itens' => [['criterio_id' => $c['id']], ['criterio_id' => $c2['id']]]], $a);
     $inspection = $call('POST', '/api/inspecoes', ['lote_id' => $l['id'], 'checklist_id' => $cl['id']], $i); $id = $inspection['id'];
     check($inspection['itens'][0]['criterio_nome'] === 'Acabamento', 'snapshot de critérios');
+    fails(fn() => $call('DELETE', '/api/checklists/' . $cl['id'] . '/itens/1', [], $a), 409, 'remoção de item histórico bloqueada');
     fails(fn() => $call('PATCH', '/api/checklists/' . $cl['id'], ['nome' => 'Mudança'], $a), 409, 'checklist histórico estável');
     fails(fn() => $call('PATCH', '/api/produtos/' . $p['id'], ['nome' => 'Mudança'], $a), 409, 'produto referenciado estável');
     fails(fn() => $call('POST', '/api/inspecoes', ['lote_id' => $l['id'], 'checklist_id' => $cl['id']], $i), 409, 'impede inspeção duplicada');
