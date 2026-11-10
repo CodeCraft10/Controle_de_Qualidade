@@ -26,7 +26,7 @@ function gp4_store(): \GP4\Storage\JsonStore {
     $default = dirname($project) . '/.gp4/' . hash('sha256', $project) . '/state.json';
     $path = getenv('STORAGE_PATH') ?: $default;
     if (!str_starts_with($path, '/')) $path = __DIR__ . '/' . $path;
-    $documentRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: null;
+    $documentRoot = !empty($_SERVER['DOCUMENT_ROOT']) ? realpath($_SERVER['DOCUMENT_ROOT']) : null;
     $parent = dirname($path);
     while (!is_dir($parent) && $parent !== dirname($parent)) $parent = dirname($parent);
     $normalizedParent = realpath($parent);
