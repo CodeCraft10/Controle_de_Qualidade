@@ -63,3 +63,15 @@ PostgreSQL, compatibilidade com frontend, homologação independente da equipe,
 implantação e confirmação das regras propostas continuam fora desta entrega.
 Os comandos reproduzíveis estão no README. O histórico antigo de testes Node.js
 não é usado como evidência da implementação PHP.
+
+## Automação no GitHub Actions
+
+O workflow `.github/workflows/frontend.yml` executa as três suítes e a checagem
+sintática em PHP 8.2 e 8.4, sem banco. O frontend tem um job separado para
+`npm ci`, build e formatação; o cache npm usa somente o lockfile do frontend.
+
+Os testes Playwright existentes iniciam o backend Node.js antigo com PostgreSQL
+por `frontend/scripts/e2e-server.mjs`. Por isso não são executados nesta automação:
+o harness precisa ser migrado para o contrato PHP antes de reativar a validação
+de integração. Os arquivos de teste foram preservados. Build/formatação não são
+apresentados como teste de integração frontend/backend.
