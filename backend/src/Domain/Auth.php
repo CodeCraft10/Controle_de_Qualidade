@@ -10,7 +10,6 @@ final class Auth {
     }
     public static function user(array $s, string $token): array {
         $session = $s['tokens'][hash('sha256', $token)] ?? null;
-        if (($session['demo'] ?? false) && !Demo::enabled()) throw new ApiError(401, 'Modo demonstração desativado');
         if (!$session || $session['expira_em'] <= time()) throw new ApiError(401, 'Sessão inválida ou expirada');
         $user = $s['usuarios'][$session['usuario_id']] ?? null;
         if (!$user || !$user['ativo']) throw new ApiError(401, 'Conta inativa');

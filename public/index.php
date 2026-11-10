@@ -15,7 +15,7 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-sr
 if (!in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
     http_response_code(405); header('Allow: GET, HEAD'); exit;
 }
-$dist = dirname(__DIR__) . '/frontend/dist';
+$dist = dirname(__DIR__) . '/web';
 if (in_array($path, ['/', '/index.php', '/index.html'], true)) {
     $file = $dist . '/index.html'; $type = 'text/html; charset=utf-8';
     header('Cache-Control: no-store');
@@ -33,7 +33,7 @@ if (in_array($path, ['/', '/index.php', '/index.html'], true)) {
 }
 if (!is_file($file)) {
     http_response_code(503); header('Content-Type: text/plain; charset=utf-8');
-    echo 'Interface não compilada. Execute npm ci e npm run build em frontend/.'; exit;
+    echo 'Arquivos da interface ausentes. Atualize o repositório completo.'; exit;
 }
 header('Content-Type: ' . $type);
 header('Content-Length: ' . filesize($file));
