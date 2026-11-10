@@ -51,28 +51,22 @@ disponibiliza visões analíticas em tempo real, mantendo histórico seguro e au
 
 ## 🛠️ Tecnologias
 - Frontend: HTML5 / CSS3 / JavaScript, Vite
-- Backend: Node.js / Express
-- Banco de Dados Relacional: PostgreSQL
+- Backend: PHP 8.2+ (API independente, sem framework)
+- Persistência atual do backend: JSON local para desenvolvimento
+- Banco de dados futuro: PostgreSQL, integração pendente
 - Git / GitHub
 - [Ferramenta de Gestão: Trello / Jira / GitHub Projects]
 
 ## ▶️ Executar o sistema
 
-O projeto está organizado em duas aplicações:
+Os componentes são mantidos em diretórios separados:
 
-- [Backend](backend/README.md): configuração do PostgreSQL, migrações, criação da primeira conta e API em `http://localhost:3000/api`.
-- [Frontend](frontend/README.md): interface web em `http://localhost:5173`, configuração, testes e manual de uso.
+- [Backend PHP](backend/README.md): API local em `http://127.0.0.1:8000/api`, criação de administrador, testes e contrato de endpoints.
+- [Frontend](frontend/README.md): arquivos da interface mantidos no repositório.
 
-Depois de iniciar a API conforme o guia do backend, execute em outro terminal:
+O backend foi refeito em PHP conforme o plano individual de Pedro. Nesta etapa não há conexão com banco nem integração com frontend. A API usa armazenamento JSON local privado para permitir demonstrações e testes. Consulte o [guia de integração futura](backend/docs/INTEGRACAO_FUTURA.md) antes de conectar os componentes; os testes antigos de integração não comprovam compatibilidade com a nova API.
 
-```sh
-cd frontend
-npm ci
-cp .env.example .env
-npm run dev
-```
-
-No PowerShell, substitua `cp` por `Copy-Item` e use `npm.cmd` caso a política de execução bloqueie `npm.ps1`. Não há usuário ou senha padrão: utilize uma conta criada no backend.
+Para executar e testar a parte de Pedro, siga exclusivamente o [README do backend](backend/README.md). O frontend permanece como componente separado.
 
 A implementação do frontend corresponde às atividades F01–F07 do plano individual do João. As [rotas e os esboços](frontend/docs/ROTAS_E_TELAS.md), o [padrão visual](frontend/docs/DESIGN_SYSTEM.md) e a [matriz de validação](frontend/docs/VALIDACAO.md) registram as decisões e evidências. A cor azul foi normalizada de `#25663EB`, que não é um hexadecimal CSS válido, para `#2563EB`.
 
