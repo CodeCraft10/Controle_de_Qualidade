@@ -1,9 +1,8 @@
 # Contratos para a integração futura
 
-Esta entrega não abre conexão com banco, não instala driver PostgreSQL e não
-consome nem modifica o frontend. O repositório já contém arquivos de frontend;
-eles não foram usados para integrar ou validar esta API PHP. Compatibilidade
-com o contrato antigo Node.js não é prometida.
+O frontend agora usa a API PHP na mesma origem, por `public/index.php`. A instalação
+integrada está descrita em [VPS](../../docs/implantacao/VPS.md). A integração com
+PostgreSQL continua futura; não há driver, migrations ou conexão relacional.
 
 ## Luiz — banco relacional
 
@@ -26,14 +25,12 @@ com o contrato antigo Node.js não é prometida.
 
 Não há DSN, credenciais, migrations nem conexão simulando PostgreSQL nesta versão.
 
-## João — frontend
+## João — frontend integrado
 
-Quando a integração for autorizada, configurar a URL base `/api`, login, Bearer,
-renovação via novo login, logout e estados de erro. Não ler `state.json` nem
-montar URLs públicas para fotos: obter binário via requisição autenticada.
-Ler `itens[].id` da inspeção para montar respostas e `respostas[].id` para desvios.
-Lidar com 401/403/409/422, paginação e fórmulas documentadas. Ajustar CORS de forma
-explícita para a origem real ou servir frontend e API sob a mesma origem.
+As telas foram alinhadas aos endpoints PHP, incluindo login/logout com token opaco,
+checklists em rascunho, campos de respostas, nomes dos snapshots, metadados de fotos,
+filtros e download CSV. A compilação é servida pela mesma entrada pública da API.
+Os testes Playwright iniciam PHP e usam armazenamento temporário real.
 
 ## Felipe — qualidade
 

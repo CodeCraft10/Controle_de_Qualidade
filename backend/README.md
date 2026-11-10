@@ -2,7 +2,8 @@
 
 API do escopo de Pedro (B01–B07), baseada no `GP4_Plano_Detalhado_Pedro.pdf`.
 PHP 8.2 ou superior, extensões JSON e Fileinfo. Sem dependências externas de runtime;
-Composer é opcional. Não há conexão com banco de dados nem integração com frontend.
+Composer é opcional. Não há conexão com banco de dados. O frontend está integrado pela entrada
+`public/index.php` na raiz do projeto; veja [instalação na VPS](../docs/implantacao/VPS.md).
 
 ## Iniciar localmente
 

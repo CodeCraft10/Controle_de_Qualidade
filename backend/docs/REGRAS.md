@@ -3,7 +3,7 @@
 O PDF é a referência de requisitos B01–B07. Orientações de cronograma, criação de
 issues e contato com colegas são planejamento da equipe, não ações automáticas
 desta implementação. Esta entrega substitui a pasta antiga pelo backend PHP,
-sem conectar banco nem frontend, conforme solicitado. Não cria issues nem envia
+sem conectar banco; o frontend foi integrado em etapa posterior, conforme solicitado. Não cria issues nem envia
 mensagens aos integrantes. O código anterior continua recuperável pelo histórico Git.
 
 ## Cobertura
@@ -33,7 +33,7 @@ Estas regras são decisões desta versão, não imposições do enunciado SENAI:
 3. Quem abre a inspeção é seu responsável; não há atribuição a terceiros nesta versão.
 4. Um lote admite uma inspeção. Não há cancelamento ou reinspeção neste contrato.
 5. Lote/produto/checklist/critérios devem estar ativos para abertura. Quantidade é
-   inteira positiva. Checklist possui de 1 a 200 critérios únicos.
+   inteira positiva. Checklist pode ser montado como rascunho com até 200 critérios únicos; a abertura de inspeção exige ao menos um.
 6. Na abertura, nome do produto, código do lote, nome do checklist e critérios são
    copiados para a inspeção. O histórico não depende de nomes de cadastros futuros.
 7. Cadastros referenciados não têm campos de negócio editáveis; podem ser desativados.
