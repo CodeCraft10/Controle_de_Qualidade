@@ -3,6 +3,19 @@ declare(strict_types=1);
 namespace GP4\Domain;
 use GP4\Http\ApiError;
 final class Catalog {
+    public static function delete(array &$s, array $u, string $table, int $id): void {
+        Auth::role($u, ['admin', 'supervisor']);
+        if (!in_array($table, ['produtos', 'lotes', 'criterios', 'checklists'], true)) {
+            throw new ApiError(409, 'Este tipo de cadastro não pode ser apagado');
+        }
+        Records::get($s, $table, $id);
+        if (self::used($s, $table, $id)) {
+            throw new ApiError(409, 'Cadastro relacionado a outros registros ou ao histórico; desative-o para preservá-los');
+        }
+        Records::audit($s, $u['id'], 'apagar', $table, $id);
+        unset($s[$table][$id]);
+    }
+
     public static function save(array &$s, array $u, string $table, array $body, ?int $id = null): array {
         Auth::role($u, $table === 'usuarios' ? ['admin'] : ['admin', 'supervisor']);
         if ($id === null) {

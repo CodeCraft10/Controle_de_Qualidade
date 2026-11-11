@@ -54,9 +54,8 @@ final class Application {
                 }
                 if ($resource !== 'inspetores' && $method === 'POST' && $id === null) return [201, Catalog::save($s, $u, $table, $body), []];
                 if ($resource !== 'inspetores' && $method === 'PATCH' && $id !== null) return [200, Catalog::save($s, $u, $table, $body, $id), []];
-                // DELETE é desativação referencial, preservando os históricos.
                 if ($resource !== 'inspetores' && $method === 'DELETE' && $id !== null) {
-                    Catalog::save($s, $u, $table, ['ativo' => false], $id); return [204, null, []];
+                    Catalog::delete($s, $u, $table, $id); return [204, null, []];
                 }
                 throw new ApiError(405, 'Método não permitido');
             }

@@ -183,7 +183,7 @@ export async function mountCatalog(root, { resource, id } = {}) {
     if (current.email) pairs.push(['E-mail', current.email], ['Perfil', current.perfil]);
     if ('descricao' in current) pairs.push(['Descrição', current.descricao || 'Não informada']);
     if (current.criado_em) pairs.push(['Criado em', formatDate(current.criado_em)]);
-    return `<section class="card"><div class="card-header"><h2>Informações do cadastro</h2><div class="actions">${activeBadge(current.ativo)}${current.status ? badge(current.status) : ''}</div></div><dl class="detail-grid">${pairs.map(([label, value]) => `<div><dt class="muted">${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>${canWrite ? `<div class="actions"><button type="button" class="button secondary" data-action="edit">Editar cadastro</button><button type="button" class="button secondary" data-action="toggle-active">${current.ativo ? 'Desativar' : 'Reativar'} ${esc(config.singular)}</button></div><div data-action-error aria-live="polite"></div>` : '<p class="muted">Seu perfil permite consultar este cadastro.</p>'}</section>`;
+    return `<section class="card"><div class="card-header"><h2>Informações do cadastro</h2><div class="actions">${activeBadge(current.ativo)}${current.status ? badge(current.status) : ''}</div></div><dl class="detail-grid">${pairs.map(([label, value]) => `<div><dt class="muted">${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>${canWrite ? `<div class="actions"><button type="button" class="button secondary" data-action="edit">Editar cadastro</button><button type="button" class="button secondary" data-action="toggle-active">${current.ativo ? 'Desativar' : 'Reativar'} ${esc(config.singular)}</button>${resource !== 'inspetores' ? '<button type="button" class="button danger" data-action="delete-record">Apagar cadastro</button>' : ''}</div><div data-action-error aria-live="polite"></div>` : '<p class="muted">Seu perfil permite consultar este cadastro.</p>'}</section>`;
   }
 
   function checklistMarkup() {
@@ -388,20 +388,30 @@ export async function mountCatalog(root, { resource, id } = {}) {
       const name = button.dataset.name || 'este produto';
       if (!window.confirm(`Desativar ${name}? O cadastro e o histórico serão preservados.`)) return;
     }
-    if (action !== 'toggle-active' && action !== 'remove-item' && action !== 'deactivate-product') return;
+    if (action === 'delete-record') {
+      const name = current.nome || current.codigo || `${config.singular} #${current.id}`;
+      if (!window.confirm(`Apagar definitivamente ${name}? Esta ação só será permitida se o cadastro não tiver registros relacionados.`)) return;
+    }
+    if (action !== 'toggle-active' && action !== 'remove-item' && action !== 'deactivate-product' && action !== 'delete-record') return;
     busy = true;
     button.disabled = true;
     const previousText = button.textContent;
     button.textContent = 'Salvando…';
     try {
       if (action === 'deactivate-product') {
-        await api.request(`/produtos/${encodeURIComponent(button.dataset.id)}`, { method: 'DELETE' });
+        await api.request(`/produtos/${encodeURIComponent(button.dataset.id)}`, { method: 'PATCH', body: { ativo: false } });
         if (!alive()) return;
         records = records.map((record) =>
           String(record.id) === button.dataset.id ? { ...record, ativo: false } : record,
         );
         notify('Produto desativado. O cadastro e o histórico foram preservados.');
         renderRows();
+        return;
+      } else if (action === 'delete-record') {
+        await api.request(`${endpoint}/${encodeURIComponent(id)}`, { method: 'DELETE' });
+        if (!alive()) return;
+        notify('Cadastro apagado.');
+        location.hash = `#/${resource}`;
         return;
       } else if (action === 'toggle-active') {
         current = await api.request(`${endpoint}/${encodeURIComponent(id)}`, {
@@ -427,7 +437,7 @@ export async function mountCatalog(root, { resource, id } = {}) {
     } catch (error) {
       if (alive()) {
         if (action === 'deactivate-product') notify(error.message, 'error');
-        else setError(action === 'toggle-active' ? '[data-action-error]' : '[data-item-error]', error);
+        else setError(action === 'toggle-active' || action === 'delete-record' ? '[data-action-error]' : '[data-item-error]', error);
       }
     } finally {
       busy = false;
