@@ -27,7 +27,7 @@ npm test
 O build atualiza `../web/`; versione-o junto com mudanças nos fontes. Os testes
 iniciam PHP com armazenamento temporário e verificam entrada direta, recarga,
 cadastro, inspeção, fotos, CSV e layout de celular. Configure `PHP_BIN` se o
-executável PHP não estiver no PATH. Não há dependência de PostgreSQL.
+executável PHP não estiver no PATH. Não há dependência de MySQL.
 
 Tokens temporários ficam somente em memória e são obtidos novamente ao recarregar.
 As regras de negócio e validações da API continuam ativas. Esta versão é pública

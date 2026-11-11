@@ -1,59 +1,36 @@
-# PostgreSQL do GP4
+# MySQL do GP4
 
-Este diretório contém o esquema relacional inicial pedido no plano individual de Luiz. As migrations modelam os cadastros, snapshots de inspeção, respostas, desvios, evidências, ações corretivas, sessões, tentativas de login e auditoria.
+Este diretório contém o esquema relacional do projeto convertido para **MySQL 8.4 LTS**, que pode ser administrado pelo phpMyAdmin. O phpMyAdmin oferece suporte a bancos compatíveis com MySQL, incluindo MySQL e MariaDB; este Compose fixa MySQL 8.4. [Documentação do phpMyAdmin](https://docs.phpmyadmin.net/en/latest/require.html) [Política de versões MySQL](https://dev.mysql.com/doc/refman/8.4/en/mysql-releases.html)
 
-## Subir uma instância local
+## Subir MySQL e phpMyAdmin localmente
 
-Na raiz do repositório, copie `.env.example` para `.env` e troque `GP4_DB_PASSWORD` por uma senha forte. O Compose publica a porta somente em `127.0.0.1` e guarda os dados no volume `gp4-postgres`:
+Na raiz do repositório, copie `.env.example` para `.env` e configure senhas fortes para `GP4_DB_PASSWORD` e `GP4_DB_ROOT_PASSWORD`. O banco e o phpMyAdmin ficam disponíveis apenas no computador local; os dados persistem no volume Docker `gp4-mysql`.
 
 ```sh
 docker compose -f compose.database.yaml up -d
 ```
 
-O serviço de migration recebe os dados de conexão do `.env` raiz. Se preferir rodar o script PHP diretamente no host, configure `backend/.env`:
+Abra `http://127.0.0.1:8081/` no navegador e entre com o usuário e senha configurados em `GP4_DB_USER` e `GP4_DB_PASSWORD`. O schema é criado no banco `GP4_DB_NAME` pelo comando abaixo; o usuário da aplicação tem privilégios apenas nesse banco.
 
-```dotenv
-DATABASE_DSN=pgsql:host=127.0.0.1;port=5432;dbname=gp4
-DATABASE_USER=gp4
-DATABASE_PASSWORD=sua-senha-local
-```
+## Aplicar migration e dados de demonstração
 
-O container de ferramenta inclui PHP CLI e `pdo_pgsql`. Aplique as migrations versionadas:
+O container auxiliar compila `pdo_mysql` e aplica as migrations versionadas:
 
 ```sh
 docker compose -f compose.database.yaml --profile tools run --rm migrate
 ```
 
-O comando registra as versões em `schema_migrations`, usa transação e bloqueio consultivo para impedir aplicação simultânea da mesma migration. Migrations já aplicadas não são repetidas.
-
-## Dados fictícios
-
-Em uma instância local vazia, carregue cenários de aprovação, reprovação, desvio, evidência e ação corretiva:
+Em um banco local vazio, o seed cria três perfis e cenários fictícios de inspeção aprovada/reprovada, desvio, evidência e ação corretiva:
 
 ```sh
 docker compose -f compose.database.yaml --profile tools run --rm migrate php bin/seed-demo.php
 ```
 
-O seed é recusado em `APP_ENV=production` e se já houver usuários. Ele cria três contas fictícias (`admin@gp4.invalid`, `supervisor@gp4.invalid`, `inspetor@gp4.invalid`), todas com senha `password`. Essas credenciais são apenas para demonstração local; não as use em uma instalação compartilhada.
+Contas do seed: `admin@gp4.invalid`, `supervisor@gp4.invalid` e `inspetor@gp4.invalid`; senha `password`. Use essas credenciais somente na demonstração local. O seed recusa `APP_ENV=production` e banco que já tenha usuários.
 
-## Backup e restauração
+MySQL faz commit implícito em operações DDL, então uma migration parcialmente aplicada não pode ser revertida pela transação do PHP. Se a primeira migration falhar num banco demonstrativo recém-criado, remova e recrie **somente esse banco vazio** antes de reaplicar; não apague volume que contenha dados que queira preservar.
 
-Execute a partir da raiz do repositório. O arquivo contém dados pessoais e evidências; guarde-o em local privado:
-
-```sh
-pg_dump --format=custom --no-owner --host=127.0.0.1 --port=5432 --username=gp4 --dbname=gp4 --file=gp4.backup
-```
-
-Restaure em um banco vazio (o `pg_restore --clean` remove objetos existentes e deve ser usado somente depois de confirmar o destino):
-
-```sh
-createdb --host=127.0.0.1 --port=5432 --username=gp4 gp4_restore
-pg_restore --no-owner --host=127.0.0.1 --port=5432 --username=gp4 --dbname=gp4_restore gp4.backup
-```
-
-Verifique o resultado com consultas de contagem e confira relações usando `backend/database/queries/relatorios.sql`.
-
-## Modelo e decisões
+## Estrutura e regras
 
 ```mermaid
 erDiagram
@@ -73,24 +50,27 @@ erDiagram
     USUARIOS ||--o{ HISTORICO_AUDITORIA : executa
 ```
 
-- `usuarios`: identidade, email único sem distinção entre maiúsculas/minúsculas, hash da senha, perfil e ativação.
-- `produtos`, `lotes`, `criterios`, `checklists`: cadastros versionados por código/nome, com exclusão lógica via `ativo`.
-- `checklist_itens`: critérios ordenados por checklist, com obrigatoriedade e no máximo uma ocorrência do mesmo critério.
-- `inspecoes`, `inspecao_itens`: lote único por inspeção e cópias dos nomes/itens usados no momento da abertura.
-- `respostas_inspecao`: uma resposta por item da inspeção; justificativa obrigatória para `nao_aplicavel`.
-- `nao_conformidades`, `historico_nao_conformidade`: no máximo um desvio por resposta e trilha de transições com autor/data.
-- `evidencias`: MIME permitido, tamanho limitado, hash SHA-256 e bytes originais em `bytea`.
-- `acoes_corretivas`, `historico_acao_corretiva`: ação, responsável/prazo e trilha de estado prevista no plano.
-- `historico_auditoria`: autor, ação, recurso e detalhes JSONB sem armazenar credenciais ou tokens.
-- `sessoes`, `tentativas_login`: somente hash SHA-256 do token/IP, expiração e contagem de falhas.
+- Cadastros guardam estado ativo/inativo; FKs usam `RESTRICT` para preservar histórico.
+- Um lote tem um produto e só pode ter uma inspeção. A inspeção guarda snapshots dos nomes e dos critérios usados.
+- Respostas são únicas por item da inspeção; cada resposta pode originar no máximo uma não conformidade.
+- `acoes_corretivas` e seu histórico estão previstos no plano, mas ainda não têm endpoints na API.
+- Datas usam `DATETIME(6)` e são gravadas em UTC; evidências de até 5 MiB ficam em `MEDIUMBLOB` com MIME, tamanho e SHA-256.
+- Email, códigos e nomes únicos usam collation case-insensitive accent-sensitive. O banco usa `utf8mb4`.
+- `historico_auditoria.detalhes` usa JSON nativo do MySQL.
 
-- Um lote tem um produto; uma inspeção por lote, enforced por `UNIQUE(lote_id)`.
-- A inspeção guarda nomes e itens em snapshot para que alterações futuras nos cadastros não mudem o histórico.
-- Respostas apontam para itens do snapshot; cada item recebe no máximo uma resposta e cada resposta pode gerar no máximo um desvio.
-- Exclusão de cadastros referenciados é bloqueada por `ON DELETE RESTRICT`; o fluxo funcional deve desativá-los.
-- Fotos ficam em `bytea` nesta primeira versão para preservar a consistência transacional. Se o volume crescer, mover bytes para storage privado exigirá chaves de objeto e compensação/outbox.
-- Ações corretivas estão modeladas como tabela independente conforme o plano, embora ainda não existam rotas de API para criá-las ou atualizá-las.
+Consultas de indicadores e histórico prontas para a aba SQL do phpMyAdmin ficam em `queries/relatorios.sql`; ajuste as variáveis `@data_inicio`, `@data_fim`, `@produto_id`, `@lote_id`, `@inspetor_id` e `@status` antes de executá-las.
 
-## Estado da integração
+## Backup e restauração
 
-O esquema e os comandos de provisionamento estão versionados, mas a API PHP ainda instancia `JsonStore` em `backend/bootstrap.php`. A troca da persistência usada em produção exige o adaptador de repositórios PostgreSQL e a migração controlada dos arquivos JSON. Até essa etapa, executar as migrations cria um banco separado e não muda a origem dos dados do site.
+Use `mysqldump` e `mysql` instalados no host, se disponíveis. Mantenha o backup em local privado:
+
+```sh
+mysqldump --single-transaction --host=127.0.0.1 --port=3306 --user=gp4 --password gp4 > gp4.sql
+mysql --host=127.0.0.1 --port=3306 --user=gp4 --password gp4 < gp4.sql
+```
+
+O segundo comando importa no banco `gp4`; para evitar sobrescrever dados, restaure primeiro em um banco vazio de nome diferente. No phpMyAdmin, também é possível exportar/importar o banco pela tela, mas confira os limites de upload se o arquivo contiver evidências.
+
+## Limite da integração atual
+
+O schema e a administração pelo phpMyAdmin estão preparados, mas a API segue usando `JsonStore` em `backend/bootstrap.php`, conforme solicitado. Aplicar a migration cria um banco separado: não altera a API e não copia os arquivos JSON existentes.

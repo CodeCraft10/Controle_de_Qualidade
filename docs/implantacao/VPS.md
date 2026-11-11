@@ -57,7 +57,7 @@ Para atualizar: `git pull origin main` e `docker compose up -d --build`.
 O arquivo ativo no volume é `/var/www/html/backend/var/state.json.demo.json`.
 Faça backup com a aplicação parada, mantenha a cópia privada e ajuste a posse para
 `www-data` ao restaurar. O armazenamento JSON é para testes em uma instância;
-PostgreSQL permanece uma integração futura.
+O schema MySQL para phpMyAdmin está preparado, mas ainda não está ligado à API.
 
 ## Desenvolvimento e testes
 

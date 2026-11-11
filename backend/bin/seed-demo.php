@@ -8,19 +8,20 @@ if ((getenv('APP_ENV') ?: '') === 'production') {
     fwrite(STDERR, "Seed de demonstração bloqueado em APP_ENV=production.\n");
     exit(1);
 }
-if (!extension_loaded('pdo_pgsql')) {
-    fwrite(STDERR, "Extensão pdo_pgsql não habilitada.\n");
+if (!extension_loaded('pdo_mysql')) {
+    fwrite(STDERR, "Extensão pdo_mysql não habilitada.\n");
     exit(1);
 }
 $dsn = getenv('DATABASE_DSN') ?: '';
-if (!str_starts_with($dsn, 'pgsql:')) {
-    fwrite(STDERR, "Configure DATABASE_DSN com o driver pgsql.\n");
+if (!str_starts_with($dsn, 'mysql:')) {
+    fwrite(STDERR, "Configure DATABASE_DSN com o driver mysql.\n");
     exit(1);
 }
 $pdo = new PDO($dsn, getenv('DATABASE_USER') ?: '', getenv('DATABASE_PASSWORD') ?: '', [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_EMULATE_PREPARES => false,
 ]);
+$pdo->exec("SET time_zone = '+00:00'");
 $version = 'seed-001-demo';
 $check = $pdo->prepare('SELECT 1 FROM schema_migrations WHERE version = :version');
 $check->execute(['version' => $version]);
@@ -37,7 +38,9 @@ $sql = file_get_contents(dirname(__DIR__) . '/database/seeds/001_demo_seed.sql')
 if ($sql === false) throw new RuntimeException('Não foi possível ler o seed.');
 $pdo->beginTransaction();
 try {
-    $pdo->exec($sql);
+    foreach (preg_split('/;\s*(?:\r?\n|$)/', trim($sql)) ?: [] as $statement) {
+        if (trim($statement) !== '') $pdo->exec($statement);
+    }
     $insert = $pdo->prepare('INSERT INTO schema_migrations(version) VALUES (:version)');
     $insert->execute(['version' => $version]);
     $pdo->commit();

@@ -18,9 +18,8 @@ mensagens aos integrantes. O código anterior continua recuperável pelo histór
 | B06 | Histórico com filtros, paginação, ordenação, indicadores e CSV | Fluxos aprovado/reprovado, filtros, fórmulas e proteção de fórmulas no CSV |
 | B07 | Validação, autorização no servidor, registros sem senha/token, testes automatizados | Suítes de domínio, HTTP e concorrência |
 
-Não há SQL, driver ou ORM nesta etapa. Persistência transacional **local** está
-implementada. Transações relacionais e validação com PostgreSQL real ficam para
-a integração futura com Luiz; não são apresentadas como concluídas.
+A API utiliza persistência transacional JSON. O esquema MySQL demonstrativo está
+em `backend/database/`, separado da API; sua integração continua pendente.
 
 ## Decisões propostas para alinhamento da equipe
 

@@ -1,8 +1,7 @@
-# Integração PostgreSQL e contratos pendentes
+# Integração MySQL e contratos pendentes
 
 O frontend agora usa a API PHP na mesma origem, por `public/index.php`. A instalação
-integrada está descrita em [VPS](../../docs/implantacao/VPS.md). A integração com
-PostgreSQL continua futura; não há driver, migrations ou conexão relacional.
+integrada está descrita em [VPS](../../docs/implantacao/VPS.md). O esquema MySQL inicial está em `backend/database/`; a API ainda usa `JsonStore`.
 
 ## Luiz — banco relacional
 
@@ -11,23 +10,23 @@ migration inicial, provisionamento local por Compose, seed fictício, consultas 
 relatório e instruções de backup/restauração. O detalhamento segue o plano
 `GP4_Plano_Detalhado_Luiz.pdf` e as regras confirmadas pela API atual.
 
-O backend HTTP ainda usa `JsonStore`; o esquema PostgreSQL é provisionado à parte.
+O backend HTTP ainda usa `JsonStore`; o esquema MySQL e a administração via phpMyAdmin são provisionados à parte.
 A integração de produção ainda exige adaptar os serviços a repositórios por
 agregado e migrar os arquivos JSON com procedimento verificável. Não configure
-`DATABASE_DSN` na API esperando que ela passe a usar PostgreSQL nesta etapa.
+`DATABASE_DSN` na API esperando que ela passe a usar MySQL nesta etapa.
 
 1. Alinhar `docs/API.md` e `docs/REGRAS.md`, especialmente a inspeção única por lote,
    snapshots, estados, exclusão lógica e autorização por responsável.
 2. **Concluído no esquema inicial:** modelar usuários, sessões, tentativas de login,
-   produtos, lotes, critérios, checklists, itens, inspeções, snapshots, respostas,
-   não conformidades, histórico, ações corretivas, evidências e auditoria.
+O backend mantém persistência transacional em JSON. O schema MySQL está preparado
+separadamente; adaptar os repositórios e migrar o JSON ainda está pendente.
 3. **Concluído no esquema inicial:** usar FKs, unicidade de email/códigos, unicidade de lote em inspeção e de
    `(inspecao_id,item_id)` em respostas. Desvios devem ter resposta única.
 4. **Pendente:** implementar repositórios e unidade de trabalho relacional. `Storage/Store.php`
    delimita a transação, mas seu contrato atual passa o estado completo em array:
-   não é adequado carregar todas as tabelas no PostgreSQL. Extrair interfaces por
-   agregado e adaptar os serviços antes de criar um `PostgresStore` para produção.
-5. **Pendente na API PostgreSQL:** finalização precisa bloquear a inspeção/lote, validar respostas/desvios e
+   não é adequado carregar todas as tabelas no MySQL. Extrair interfaces por
+   agregado e adaptar os serviços antes de criar um `MySqlStore` para produção.
+5. **Pendente na API MySQL:** finalização precisa bloquear a inspeção/lote, validar respostas/desvios e
    atualizar ambos em uma transação. Usar PDO parametrizado ou ORM; nunca concatenar entrada em SQL.
 6. **Pendente:** rodar os mesmos cenários de regras e HTTP contra a implementação nova e adicionar
    testes com banco real para locks, rollback, constraints e migrações.

@@ -1,20 +1,33 @@
 services:
   database:
-    image: postgres:16-alpine
+    image: mysql:8.4
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${GP4_DB_NAME:-gp4}
-      POSTGRES_USER: ${GP4_DB_USER:-gp4}
-      POSTGRES_PASSWORD: ${GP4_DB_PASSWORD:?Defina GP4_DB_PASSWORD no arquivo .env}
+      MYSQL_DATABASE: ${GP4_DB_NAME:-gp4}
+      MYSQL_USER: ${GP4_DB_USER:-gp4}
+      MYSQL_PASSWORD: ${GP4_DB_PASSWORD:?Defina GP4_DB_PASSWORD no arquivo .env}
+      MYSQL_ROOT_PASSWORD: ${GP4_DB_ROOT_PASSWORD:?Defina GP4_DB_ROOT_PASSWORD no arquivo .env}
     ports:
-      - "127.0.0.1:${GP4_DB_PORT:-5432}:5432"
+      - "127.0.0.1:${GP4_DB_PORT:-3306}:3306"
     volumes:
-      - gp4-postgres:/var/lib/postgresql/data
+      - gp4-mysql:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 5s
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
       timeout: 5s
-      retries: 12
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+    ports:
+      - "127.0.0.1:8081:80"
+    depends_on:
+      database:
+        condition: service_healthy
 
   migrate:
     profiles: ["tools"]
@@ -23,7 +36,7 @@ services:
       dockerfile: Dockerfile
     environment:
       APP_ENV: development
-      DATABASE_DSN: "pgsql:host=database;port=5432;dbname=${GP4_DB_NAME:-gp4}"
+      DATABASE_DSN: "mysql:host=database;port=3306;dbname=${GP4_DB_NAME:-gp4};charset=utf8mb4"
       DATABASE_USER: ${GP4_DB_USER:-gp4}
       DATABASE_PASSWORD: ${GP4_DB_PASSWORD:?Defina GP4_DB_PASSWORD no arquivo .env}
     command: ["php", "bin/migrate.php"]
@@ -32,4 +45,4 @@ services:
         condition: service_healthy
 
 volumes:
-  gp4-postgres:
+  gp4-mysql:

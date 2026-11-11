@@ -27,7 +27,7 @@ Serão avaliadas as seguintes funcionalidades:
 ### 4. Ambiente de testes
 - Sistema operacional: [preencher]
 - Navegador: [preencher]
-- Banco de dados: PostgreSQL
+- Banco de dados demonstrativo: MySQL 8.4 (schema separado da API JSON)
 - Backend: Node.js e Express
 
 ### 5. Critérios de aprovação

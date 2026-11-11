@@ -103,7 +103,7 @@ se uma regra falhar, nenhuma alteração da operação é confirmada. Arquivo co
 causa erro, sem reinicialização silenciosa. Tokens são aleatórios, expiram após 8h
 por padrão e só seu SHA-256 é armazenado. Senhas usam bcrypt com custo 12.
 
-Isso permite executar e demonstrar o backend sem banco. Não equivale a PostgreSQL:
+Isso permite executar e demonstrar o backend sem banco. Não equivale a MySQL:
 usa um único arquivo, carrega o estado completo e serializa as requisições. Use
 apenas para desenvolvimento e dados de demonstração em uma instância/disco local;
 não para volume industrial, múltiplos servidores ou filesystem de rede. As fotos

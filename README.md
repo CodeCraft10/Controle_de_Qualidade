@@ -53,7 +53,7 @@ disponibiliza visões analíticas em tempo real, mantendo histórico seguro e au
 - Frontend: HTML5 / CSS3 / JavaScript, Vite
 - Backend: PHP 8.2+ (API independente, sem framework)
 - Persistência atual do backend: JSON local para desenvolvimento
-- Banco de dados futuro: PostgreSQL, integração pendente
+- Banco de dados demonstrativo: MySQL 8.4 (schema preparado; API ainda usa JSON)
 - Git / GitHub
 - [Ferramenta de Gestão: Trello / Jira / GitHub Projects]
 
