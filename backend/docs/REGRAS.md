@@ -18,8 +18,8 @@ mensagens aos integrantes. O código anterior continua recuperável pelo histór
 | B06 | Histórico com filtros, paginação, ordenação, indicadores e CSV | Fluxos aprovado/reprovado, filtros, fórmulas e proteção de fórmulas no CSV |
 | B07 | Validação, autorização no servidor, registros sem senha/token, testes automatizados | Suítes de domínio, HTTP e concorrência |
 
-A API utiliza persistência transacional JSON. O esquema MySQL demonstrativo está
-em `backend/database/`, separado da API; sua integração continua pendente.
+A API utiliza persistência transacional JSON local sem `DATABASE_DSN`; com
+`DATABASE_DSN` configurado, utiliza o adaptador MySQL de `backend/database/`.
 
 ## Decisões propostas para alinhamento da equipe
 

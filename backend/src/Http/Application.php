@@ -2,14 +2,14 @@
 declare(strict_types=1);
 namespace GP4\Http;
 use GP4\Domain\{Auth, Catalog, Demo, Evidence, Inspections, Queries, Records, Rules};
-use GP4\Storage\Store;
+use GP4\Storage\{JsonStore, MySqlStore, Store};
 final class Application {
     public function __construct(private readonly Store $store) {}
     /** Resposta [status, corpo, cabeçalhos]; toda mutação de domínio é atômica no adaptador. */
     public function handle(string $method, string $path, array $body = [], array $query = [], string $token = '', array $files = [], string $ip = 'local'): array {
         if ($method === 'GET' && $path === '/api/config') return [200, ['demo_mode' => Demo::enabled()], []];
         if ($method === 'POST' && $path === '/api/auth/demo') return [200, Demo::session($this->store), []];
-        if ($method === 'GET' && $path === '/api/health') return [200, ['status' => 'ok', 'storage' => 'json-local', 'integracoes' => false], []];
+        if ($method === 'GET' && $path === '/api/health') return [200, ['status' => 'ok', 'storage' => $this->store instanceof MySqlStore ? 'mysql' : 'json-local', 'integracoes' => false], []];
         if ($method === 'POST' && $path === '/api/auth/login') return [200, Auth::login($this->store, $body, $ip), []];
         return $this->store->transaction(function (array &$s) use ($method, $path, $body, $query, $token, $files) {
             $u = Auth::user($s, $token);

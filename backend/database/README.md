@@ -7,8 +7,13 @@ Este diretório contém o esquema relacional do projeto convertido para **MySQL 
 Na raiz do repositório, copie `.env.example` para `.env` e configure senhas fortes para `GP4_DB_PASSWORD` e `GP4_DB_ROOT_PASSWORD`. O banco e o phpMyAdmin ficam disponíveis apenas no computador local; os dados persistem no volume Docker `gp4-mysql`.
 
 ```sh
-docker compose -f compose.database.yaml up -d
+docker compose -f compose.yaml -f compose.database.yaml up -d --build
 ```
+
+Esse comando constrói a API com `pdo_mysql`, inicia MySQL, aplica as migrations
+automaticamente e então inicia o site. O endpoint `/api/health` informa
+`"storage":"mysql"`. O arquivo `compose.database.yaml` acrescenta o phpMyAdmin
+à configuração principal.
 
 Abra `http://127.0.0.1:8081/` no navegador e entre com o usuário e senha configurados em `GP4_DB_USER` e `GP4_DB_PASSWORD`. O schema é criado no banco `GP4_DB_NAME` pelo comando abaixo; o usuário da aplicação tem privilégios apenas nesse banco.
 
@@ -17,13 +22,13 @@ Abra `http://127.0.0.1:8081/` no navegador e entre com o usuário e senha config
 O container auxiliar compila `pdo_mysql` e aplica as migrations versionadas:
 
 ```sh
-docker compose -f compose.database.yaml --profile tools run --rm migrate
+docker compose -f compose.yaml -f compose.database.yaml run --rm migrate
 ```
 
 Em um banco local vazio, o seed cria três perfis e cenários fictícios de inspeção aprovada/reprovada, desvio, evidência e ação corretiva:
 
 ```sh
-docker compose -f compose.database.yaml --profile tools run --rm migrate php bin/seed-demo.php
+docker compose -f compose.yaml -f compose.database.yaml run --rm migrate php bin/seed-demo.php
 ```
 
 Contas do seed: `admin@gp4.invalid`, `supervisor@gp4.invalid` e `inspetor@gp4.invalid`; senha `password`. Use essas credenciais somente na demonstração local. O seed recusa `APP_ENV=production` e banco que já tenha usuários.
@@ -71,6 +76,17 @@ mysql --host=127.0.0.1 --port=3306 --user=gp4 --password gp4 < gp4.sql
 
 O segundo comando importa no banco `gp4`; para evitar sobrescrever dados, restaure primeiro em um banco vazio de nome diferente. No phpMyAdmin, também é possível exportar/importar o banco pela tela, mas confira os limites de upload se o arquivo contiver evidências.
 
-## Limite da integração atual
+## Importar o estado JSON existente
 
-O schema e a administração pelo phpMyAdmin estão preparados, mas a API segue usando `JsonStore` em `backend/bootstrap.php`, conforme solicitado. Aplicar a migration cria um banco separado: não altera a API e não copia os arquivos JSON existentes.
+Faça uma cópia privada do arquivo JSON atual. Com MySQL em execução e migrations
+aplicadas, configure as variáveis `DATABASE_DSN`, `DATABASE_USER` e
+`DATABASE_PASSWORD` no ambiente PHP e execute, dentro de `backend/`:
+
+```sh
+php bin/import-json.php /caminho/privado/state.json.demo.json
+```
+
+O importador só funciona em um banco sem registros, exige um caminho explícito e
+preserva o arquivo JSON original. Não rode o seed de demonstração antes de importar.
+O adaptador atual mantém compatibilidade carregando o estado inteiro em cada
+operação; é destinado a demonstrações e baixo volume.

@@ -6,8 +6,8 @@
 # Backend PHP — Controle de Qualidade
 
 API do escopo de Pedro (B01–B07), baseada no `GP4_Plano_Detalhado_Pedro.pdf`.
-PHP 8.2 ou superior, extensões JSON e Fileinfo. Sem dependências externas de runtime;
-Composer é opcional. Não há conexão com banco de dados. O frontend está integrado pela entrada
+PHP 8.2 ou superior, extensões JSON e Fileinfo. Para MySQL, habilite também `pdo_mysql`.
+Sem dependências externas de runtime; Composer é opcional. O frontend está integrado pela entrada
 `public/index.php` na raiz do projeto; veja [instalação na VPS](../docs/implantacao/VPS.md).
 
 ## Iniciar localmente
@@ -35,7 +35,8 @@ para fotos de até 5 MiB, prefira o comando completo acima.
 curl http://127.0.0.1:8000/api/health
 ```
 
-Resposta: `{"status":"ok","storage":"json-local","integracoes":false}`.
+Sem `DATABASE_DSN`, resposta: `{"status":"ok","storage":"json-local","integracoes":false}`.
+Com `DATABASE_DSN` MySQL configurado e migrations aplicadas, `storage` será `mysql`.
 Somente `public/` pode ser a raiz pública. O roteador não serve arquivos arbitrários.
 O servidor embutido é para desenvolvimento local.
 
@@ -94,22 +95,16 @@ docs/                       contrato, decisões, demonstração e validação
 - [Integração futura com banco e frontend](docs/INTEGRACAO_FUTURA.md)
 - [Evidências de validação](docs/VALIDACAO.md)
 
-## Armazenamento nesta etapa
+## Armazenamento
 
-`var/state.json` guarda cadastros, inspeções, sessões, auditoria e fotos em base64.
-Fotos e metadados são gravados na mesma transação para evitar registros quebrados.
-Há bloqueio por arquivo separado (`.lock`), gravação em temporário e rename atômico;
-se uma regra falhar, nenhuma alteração da operação é confirmada. Arquivo corrompido
-causa erro, sem reinicialização silenciosa. Tokens são aleatórios, expiram após 8h
-por padrão e só seu SHA-256 é armazenado. Senhas usam bcrypt com custo 12.
+Sem `DATABASE_DSN`, `var/state.json` guarda cadastros, inspeções, sessões, auditoria
+e fotos em base64, com lock e gravação atômica. Com `DATABASE_DSN=mysql:...`, a API
+usa MySQL; aplique antes as migrations em `database/migrations/`. O adaptador atual
+carrega o estado completo sob uma transação e lock global para manter compatibilidade
+com os serviços PHP existentes. É adequado para demonstração e volume pequeno; para
+uso maior, a API precisa migrar para consultas específicas. As fotos ficam em BLOB.
 
-Isso permite executar e demonstrar o backend sem banco. Não equivale a MySQL:
-usa um único arquivo, carrega o estado completo e serializa as requisições. Use
-apenas para desenvolvimento e dados de demonstração em uma instância/disco local;
-não para volume industrial, múltiplos servidores ou filesystem de rede. As fotos
-ocupam aproximadamente 33% a mais por causa do base64. Pare a API antes de copiar
-`var/state.json` para backup/restauração; trate a cópia como dado privado.
-
-A integração relacional exigida no projeto completo permanece pendente. O frontend
-já está conectado à API PHP; a instalação integrada usa o Dockerfile da raiz,
-e não o Dockerfile de API isolada desta pasta.
+Para importar o arquivo JSON, configure `DATABASE_DSN`, `DATABASE_USER` e
+`DATABASE_PASSWORD` e execute `php bin/import-json.php <caminho-do-json>`. O
+importador exige o caminho explícito, recusa banco com registros e mantém intacto o
+arquivo de origem. Faça uma cópia privada do JSON antes da migração.

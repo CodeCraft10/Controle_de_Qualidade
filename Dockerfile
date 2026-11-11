@@ -6,7 +6,7 @@ COPY frontend/ ./
 RUN npm run build
 
 FROM php:8.4-apache
-RUN a2enmod rewrite headers
+RUN a2enmod rewrite headers && docker-php-ext-install pdo_mysql
 COPY deploy/apache.conf /etc/apache2/sites-available/000-default.conf
 COPY deploy/php.ini /usr/local/etc/php/conf.d/gp4.ini
 COPY backend/ /var/www/html/backend/

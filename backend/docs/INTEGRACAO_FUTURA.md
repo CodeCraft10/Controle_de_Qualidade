@@ -1,7 +1,7 @@
 # Integração MySQL e contratos pendentes
 
 O frontend agora usa a API PHP na mesma origem, por `public/index.php`. A instalação
-integrada está descrita em [VPS](../../docs/implantacao/VPS.md). O esquema MySQL inicial está em `backend/database/`; a API ainda usa `JsonStore`.
+integrada está descrita em [VPS](../../docs/implantacao/VPS.md). O esquema MySQL está em `backend/database/`; a API usa MySQL quando `DATABASE_DSN` está configurado e mantém `JsonStore` como modo local sem DSN.
 
 ## Luiz — banco relacional
 

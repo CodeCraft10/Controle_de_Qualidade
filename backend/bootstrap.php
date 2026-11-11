@@ -19,7 +19,17 @@ if (is_file(__DIR__ . '/.env')) {
     }
 }
 date_default_timezone_set('UTC');
-function gp4_store(): \GP4\Storage\JsonStore {
+function gp4_store(): \GP4\Storage\Store {
+    $dsn = getenv('DATABASE_DSN') ?: '';
+    if ($dsn !== '') {
+        if (!str_starts_with($dsn, 'mysql:')) throw new \RuntimeException('DATABASE_DSN deve usar MySQL');
+        if (!extension_loaded('pdo_mysql')) throw new \RuntimeException('A extensão pdo_mysql não está habilitada');
+        $pdo = new \PDO($dsn, getenv('DATABASE_USER') ?: '', getenv('DATABASE_PASSWORD') ?: '', [
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_EMULATE_PREPARES => false,
+        ]);
+        return new \GP4\Storage\MySqlStore($pdo);
+    }
     // Em hospedagem nativa, dados privados ficam fora da pasta publicada.
     // Docker usa STORAGE_PATH explícito no volume persistente.
     $project = realpath(dirname(__DIR__));

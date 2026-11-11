@@ -57,7 +57,10 @@ Para atualizar: `git pull origin main` e `docker compose up -d --build`.
 O arquivo ativo no volume é `/var/www/html/backend/var/state.json.demo.json`.
 Faça backup com a aplicação parada, mantenha a cópia privada e ajuste a posse para
 `www-data` ao restaurar. O armazenamento JSON é para testes em uma instância;
-O schema MySQL para phpMyAdmin está preparado, mas ainda não está ligado à API.
+O modo padrão da VPS permanece usando o arquivo JSON configurado para essa
+instalação. A integração MySQL é iniciada com a configuração Compose local que
+inclui `compose.database.yaml`; não altere a configuração persistente da VPS sem
+planejar a migração do armazenamento existente.
 
 ## Desenvolvimento e testes
 

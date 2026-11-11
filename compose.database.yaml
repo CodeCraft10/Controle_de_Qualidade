@@ -17,20 +17,7 @@ services:
       timeout: 5s
       retries: 10
 
-  phpmyadmin:
-    image: phpmyadmin:latest
-    restart: unless-stopped
-    environment:
-      PMA_HOST: database
-      PMA_PORT: 3306
-    ports:
-      - "127.0.0.1:8081:80"
-    depends_on:
-      database:
-        condition: service_healthy
-
   migrate:
-    profiles: ["tools"]
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -43,6 +30,27 @@ services:
     depends_on:
       database:
         condition: service_healthy
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+    ports:
+      - "127.0.0.1:8081:80"
+    depends_on:
+      database:
+        condition: service_healthy
+
+  app:
+    environment:
+      DATABASE_DSN: "mysql:host=database;port=3306;dbname=${GP4_DB_NAME:-gp4};charset=utf8mb4"
+      DATABASE_USER: ${GP4_DB_USER:-gp4}
+      DATABASE_PASSWORD: ${GP4_DB_PASSWORD:?Defina GP4_DB_PASSWORD no arquivo .env}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
 
 volumes:
   gp4-mysql:
