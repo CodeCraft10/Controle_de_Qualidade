@@ -122,7 +122,7 @@ export async function mountCatalog(root, { resource, id } = {}) {
         : resource === 'inspetores'
           ? 'E-mail'
           : 'Descrição';
-    return `<div class="card-header"><h2>Registros</h2><span class="muted">${filtered.length} ${filtered.length === 1 ? 'registro' : 'registros'}</span></div>${rows.length ? `<div class="table-wrap"><table><thead><tr><th scope="col">${resource === 'lotes' ? 'Lote' : 'Nome'}</th><th scope="col">${column}</th><th scope="col">Situação</th><th scope="col"><span class="sr-only">Ações</span></th></tr></thead><tbody>${rows.map((record) => `<tr><td><strong>${esc(record.nome || record.codigo)}</strong>${record.codigo && record.nome ? `<small class="muted">${esc(record.codigo)}</small>` : ''}</td><td>${resource === 'lotes' ? `${esc(productLabel(record.produto_id))}<small class="muted">${esc(record.quantidade)} unidades</small>` : esc(resource === 'inspetores' ? record.email : record.descricao || '—')}</td><td>${activeBadge(record.ativo)}${resource === 'lotes' ? ` ${badge(record.status)}` : ''}</td><td><a class="button secondary small" href="#/${resource}/${esc(record.id)}" aria-label="Ver detalhes de ${esc(record.nome || record.codigo)}">Detalhes</a></td></tr>`).join('')}</tbody></table></div>` : empty(query || activeFilter ? 'Nenhum registro corresponde aos filtros.' : `Nenhum ${config.singular} cadastrado.`)}<div class="pagination"><span class="muted">Página ${page} de ${pages}</span><div class="actions"><button type="button" class="button secondary small" data-action="previous" ${page === 1 ? 'disabled' : ''}>Anterior</button><button type="button" class="button secondary small" data-action="next" ${page === pages ? 'disabled' : ''}>Próxima</button></div></div>`;
+    return `<div class="card-header"><h2>Registros</h2><span class="muted">${filtered.length} ${filtered.length === 1 ? 'registro' : 'registros'}</span></div>${rows.length ? `<div class="table-wrap"><table><thead><tr><th scope="col">${resource === 'lotes' ? 'Lote' : 'Nome'}</th><th scope="col">${column}</th><th scope="col">Situação</th><th scope="col"><span class="sr-only">Ações</span></th></tr></thead><tbody>${rows.map((record) => `<tr><td><strong>${esc(record.nome || record.codigo)}</strong>${record.codigo && record.nome ? `<small class="muted">${esc(record.codigo)}</small>` : ''}</td><td>${resource === 'lotes' ? `${esc(productLabel(record.produto_id))}<small class="muted">${esc(record.quantidade)} unidades</small>` : esc(resource === 'inspetores' ? record.email : record.descricao || '—')}</td><td>${activeBadge(record.ativo)}${resource === 'lotes' ? ` ${badge(record.status)}` : ''}</td><td><div class="actions"><a class="button secondary small" href="#/${resource}/${esc(record.id)}" aria-label="Ver detalhes de ${esc(record.nome || record.codigo)}">Detalhes</a>${resource === 'produtos' && canWrite && record.ativo ? `<button type="button" class="button secondary small" data-action="deactivate-product" data-id="${esc(record.id)}" data-name="${esc(record.nome || record.codigo)}">Desativar</button>` : ''}</div></td></tr>`).join('')}</tbody></table></div>` : empty(query || activeFilter ? 'Nenhum registro corresponde aos filtros.' : `Nenhum ${config.singular} cadastrado.`)}<div class="pagination"><span class="muted">Página ${page} de ${pages}</span><div class="actions"><button type="button" class="button secondary small" data-action="previous" ${page === 1 ? 'disabled' : ''}>Anterior</button><button type="button" class="button secondary small" data-action="next" ${page === pages ? 'disabled' : ''}>Próxima</button></div></div>`;
   }
 
   function renderRows() {
@@ -384,13 +384,26 @@ export async function mountCatalog(root, { resource, id } = {}) {
       if (editing) view.querySelector('[data-catalog-form] input')?.focus();
       return;
     }
-    if (action !== 'toggle-active' && action !== 'remove-item') return;
+    if (action === 'deactivate-product') {
+      const name = button.dataset.name || 'este produto';
+      if (!window.confirm(`Desativar ${name}? O cadastro e o histórico serão preservados.`)) return;
+    }
+    if (action !== 'toggle-active' && action !== 'remove-item' && action !== 'deactivate-product') return;
     busy = true;
     button.disabled = true;
     const previousText = button.textContent;
     button.textContent = 'Salvando…';
     try {
-      if (action === 'toggle-active') {
+      if (action === 'deactivate-product') {
+        await api.request(`/produtos/${encodeURIComponent(button.dataset.id)}`, { method: 'DELETE' });
+        if (!alive()) return;
+        records = records.map((record) =>
+          String(record.id) === button.dataset.id ? { ...record, ativo: false } : record,
+        );
+        notify('Produto desativado. O cadastro e o histórico foram preservados.');
+        renderRows();
+        return;
+      } else if (action === 'toggle-active') {
         current = await api.request(`${endpoint}/${encodeURIComponent(id)}`, {
           method: 'PATCH',
           body: { ativo: !current.ativo },
@@ -412,8 +425,10 @@ export async function mountCatalog(root, { resource, id } = {}) {
       }
       render();
     } catch (error) {
-      if (alive())
-        setError(action === 'toggle-active' ? '[data-action-error]' : '[data-item-error]', error);
+      if (alive()) {
+        if (action === 'deactivate-product') notify(error.message, 'error');
+        else setError(action === 'toggle-active' ? '[data-action-error]' : '[data-item-error]', error);
+      }
     } finally {
       busy = false;
       if (button.isConnected) {

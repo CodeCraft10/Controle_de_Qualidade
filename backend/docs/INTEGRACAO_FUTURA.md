@@ -1,4 +1,4 @@
-# Contratos para a integração futura
+# Integração PostgreSQL e contratos pendentes
 
 O frontend agora usa a API PHP na mesma origem, por `public/index.php`. A instalação
 integrada está descrita em [VPS](../../docs/implantacao/VPS.md). A integração com
@@ -6,24 +6,37 @@ PostgreSQL continua futura; não há driver, migrations ou conexão relacional.
 
 ## Luiz — banco relacional
 
+O primeiro esquema relacional está implementado em `backend/database/`, com
+migration inicial, provisionamento local por Compose, seed fictício, consultas de
+relatório e instruções de backup/restauração. O detalhamento segue o plano
+`GP4_Plano_Detalhado_Luiz.pdf` e as regras confirmadas pela API atual.
+
+O backend HTTP ainda usa `JsonStore`; o esquema PostgreSQL é provisionado à parte.
+A integração de produção ainda exige adaptar os serviços a repositórios por
+agregado e migrar os arquivos JSON com procedimento verificável. Não configure
+`DATABASE_DSN` na API esperando que ela passe a usar PostgreSQL nesta etapa.
+
 1. Alinhar `docs/API.md` e `docs/REGRAS.md`, especialmente a inspeção única por lote,
    snapshots, estados, exclusão lógica e autorização por responsável.
-2. Modelar usuários, tokens, produtos, lotes, critérios, checklists, itens,
-   inspeções, snapshots, respostas, não conformidades, histórico, evidências e auditoria.
-3. Usar FKs, unicidade de email/códigos, unicidade de lote em inspeção e de
+2. **Concluído no esquema inicial:** modelar usuários, sessões, tentativas de login,
+   produtos, lotes, critérios, checklists, itens, inspeções, snapshots, respostas,
+   não conformidades, histórico, ações corretivas, evidências e auditoria.
+3. **Concluído no esquema inicial:** usar FKs, unicidade de email/códigos, unicidade de lote em inspeção e de
    `(inspecao_id,item_id)` em respostas. Desvios devem ter resposta única.
-4. Implementar repositórios e unidade de trabalho relacional. `Storage/Store.php`
+4. **Pendente:** implementar repositórios e unidade de trabalho relacional. `Storage/Store.php`
    delimita a transação, mas seu contrato atual passa o estado completo em array:
    não é adequado carregar todas as tabelas no PostgreSQL. Extrair interfaces por
    agregado e adaptar os serviços antes de criar um `PostgresStore` para produção.
-5. Finalização precisa bloquear a inspeção/lote, validar respostas/desvios e
+5. **Pendente na API PostgreSQL:** finalização precisa bloquear a inspeção/lote, validar respostas/desvios e
    atualizar ambos em uma transação. Usar PDO parametrizado ou ORM; nunca concatenar entrada em SQL.
-6. Rodar os mesmos cenários de regras e HTTP contra a implementação nova e adicionar
+6. **Pendente:** rodar os mesmos cenários de regras e HTTP contra a implementação nova e adicionar
    testes com banco real para locks, rollback, constraints e migrações.
-7. Para fotos em storage privado externo, guardar chave/metadados no banco e
+7. **Pendente se fotos forem para storage externo:** guardar chave/metadados no banco e
    definir compensação/outbox: a transação SQL não torna o upload externo atômico.
 
-Não há DSN, credenciais, migrations nem conexão simulando PostgreSQL nesta versão.
+O schema contém migrations, mas não há configuração `DATABASE_DSN` ativa no backend
+HTTP. As instruções de provisionamento e a limitação atual estão em
+`backend/database/README.md`.
 
 ## João — frontend integrado
 

@@ -1,0 +1,35 @@
+services:
+  database:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${GP4_DB_NAME:-gp4}
+      POSTGRES_USER: ${GP4_DB_USER:-gp4}
+      POSTGRES_PASSWORD: ${GP4_DB_PASSWORD:?Defina GP4_DB_PASSWORD no arquivo .env}
+    ports:
+      - "127.0.0.1:${GP4_DB_PORT:-5432}:5432"
+    volumes:
+      - gp4-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  migrate:
+    profiles: ["tools"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      APP_ENV: development
+      DATABASE_DSN: "pgsql:host=database;port=5432;dbname=${GP4_DB_NAME:-gp4}"
+      DATABASE_USER: ${GP4_DB_USER:-gp4}
+      DATABASE_PASSWORD: ${GP4_DB_PASSWORD:?Defina GP4_DB_PASSWORD no arquivo .env}
+    command: ["php", "bin/migrate.php"]
+    depends_on:
+      database:
+        condition: service_healthy
+
+volumes:
+  gp4-postgres:

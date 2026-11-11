@@ -1,4 +1,8 @@
 FROM php:8.4-cli-alpine
+RUN apk add --no-cache libpq \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev \
+    && docker-php-ext-install pdo_pgsql \
+    && apk del .build-deps
 COPY --chown=www-data:www-data . /app/
 WORKDIR /app
 ENV STORAGE_PATH=var/state.json
