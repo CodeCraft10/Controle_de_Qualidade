@@ -1,6 +1,6 @@
 FROM php:8.4-cli-alpine
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install pdo_mysql pdo_pgsql \
     && apk del .build-deps
 COPY --chown=www-data:www-data . /app/
 WORKDIR /app
