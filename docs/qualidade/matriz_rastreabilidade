@@ -1,17 +1,46 @@
 # Matriz de Rastreabilidade
+## Sistema Inteligente de Controle de Qualidade
 
-| ID | Requisito | Caso de teste | Situação |
+A matriz relaciona os requisitos funcionais aos casos de teste planejados.
+
+| ID | Requisito / funcionalidade | Caso(s) de teste | Situação |
 |---|---|---|---|
-| RF01 | Autenticação de usuários | CT001, CT002 | Pendente |
-| RF02 | Cadastro de produtos | CT003 | Pendente |
-| RF03 | Cadastro de lotes | A definir | Pendente |
-| RF04 | Registro de inspeções | A definir | Pendente |
-| RF05 | Registro de não conformidades | A definir | Pendente |
-| RF06 | Geração de relatórios | A definir | Pendente |
+| RF01 | A aplicação deve abrir e apresentar o painel inicial | CT001, CT002 | Aprovado |
+| RF02 | O sistema deve validar os campos obrigatórios de produtos | CT003 | Aprovado |
+| RF03 | O sistema deve permitir cadastrar e consultar produtos | CT004 | Aprovado |
+| RF04 | O sistema deve permitir desativar produtos sem apagar referências | CT005 | Aprovado |
+| RF05 | O sistema deve permitir cadastrar e consultar inspetores conforme permissões | CT006 | Aprovado |
+| RF06 | O sistema deve permitir montar checklists com critérios ativos | CT007 | Aprovado |
+| RF07 | O sistema deve impedir o uso de cadastros inativos em novas inspeções | CT008 | Aprovado |
+| RF08 | O sistema deve impedir a finalização de inspeções incompletas | CT009 | Aprovado |
+| RF09 | Respostas não conformes devem exigir não conformidade vinculada | CT010 | Aprovado |
+| RF10 | O sistema deve aceitar evidências nos formatos permitidos | CT011 | Aprovado |
+| RF11 | O sistema deve rejeitar arquivos de evidência não permitidos | CT012 | Aprovado |
+| RF12 | O histórico deve permitir consulta e aplicação de filtros | CT013 | Aprovado |
+| RF13 | O sistema deve gerar relatórios em CSV | CT014 | Concluído |
+| RNF01 | A interface deve se adaptar a telas estreitas | CT015 | Aprovado |
+| RF14 | O sistema deve registrar e apresentar o histórico de tratamento de não conformidades | CT016 | Aprovado |
+
+## Requisitos transversais
+
+| ID | Requisito | Como validar | Situação |
+|---|---|---|---|
+| RNF02 | Mensagens de erro devem ser compreensíveis | Observar mensagens em cenários inválidos e de falha de rede | Aprovado |
+| RNF03 | Os dados apresentados nos indicadores devem corresponder aos registros e filtros | Comparar painel com histórico/API em ambiente de teste | Aprovado |
+| RNF04 | Acesso a operações deve respeitar as permissões dos perfis | Validar perfis e respostas de acesso permitido/negado no backend | Aprovado |
+| RNF05 | Evidências devem exigir autorização para consulta | Tentar consultar evidência com usuário autorizado e não autorizado em ambiente controlado | Aprovado |
+| RNF06 | A aplicação deve preservar o histórico de registros utilizados | Consultar inspeções após desativação de cadastros relacionados | Aprovado |
 
 ## Legenda
 
-- Pendente: ainda não testado.
-- Aprovado: teste realizado com sucesso.
-- Reprovado: teste apresentou resultado diferente do esperado.
-- Não aplicável: requisito não faz parte da versão avaliada.
+- **Pendente:** ainda não executado.
+- **Aprovado:** executado e resultado correspondeu ao esperado.
+- **Reprovado:** executado e apresentou divergência.
+- **Bloqueado:** não foi possível executar por dependência ou indisponibilidade.
+- **Não aplicável:** requisito fora da versão avaliada, com justificativa registrada.
+
+## Observações
+
+- A matriz contém cobertura planejada; não significa que os testes já foram executados.
+- Os requisitos devem ser ajustados se a equipe alterar o escopo ou as regras do sistema.
+- Bugs identificados devem ser relacionados ao caso de teste correspondente no `registro_de_bugs.md`.
