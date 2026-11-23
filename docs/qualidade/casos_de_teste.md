@@ -1,433 +1,466 @@
-Casos de Teste
-Sistema Inteligente de Controle de Qualidade
-Orientações de execução
-Executar os casos no ambiente e na versão registrados no plano de testes.
+# Casos de Teste
 
-Utilizar apenas dados fictícios.
+## Sistema Inteligente de Controle de Qualidade
 
-Preencher Resultado obtido, Data, Responsável e Status depois de executar cada caso.
+## 1. Orientações de execução
 
-Não marcar como aprovado sem ter realizado o teste.
+Os casos de teste deste documento têm como objetivo verificar o funcionamento das principais funcionalidades do Sistema Inteligente de Controle de Qualidade.
 
-Anexar evidências quando o comportamento precisar ser demonstrado.
+Antes de executar os testes, considere as seguintes orientações:
 
-Status possíveis: Pendente, Aprovado, Reprovado, Bloqueado ou Não aplicável.
+- Executar os casos no ambiente e na versão registrados no plano de testes.
+- Utilizar apenas dados fictícios.
+- Preencher Resultado obtido, Data, Responsável e Status depois de executar cada caso.
+- Não marcar como aprovado sem ter realizado o teste.
+- Anexar evidências quando o comportamento precisar ser demonstrado.
 
-CT001 — Abertura do sistema
-Funcionalidade: Acesso inicial
+Os status possíveis são: Pendente, Aprovado, Reprovado, Bloqueado ou Não aplicável.
 
-Objetivo: Verificar se o endereço principal abre o sistema.
+## 2. Acesso e carregamento do sistema
 
-Pré-condição: Aplicação disponível.
+### CT001 — Abertura do sistema
 
-Passos
-Acessar [https://codecraft.devlook.xyz/](https://codecraft.devlook.xyz/).
+**Funcionalidade:** Acesso inicial.
 
-Aguardar o carregamento completo.
+**Objetivo:** Verificar se o endereço principal abre o sistema.
 
-Observar a tela inicial.
+**Pré-condição:** Aplicação disponível.
 
-Resultado esperado
-O sistema deve carregar e apresentar o painel inicial sem erro inesperado.
+**Passos:**
 
-Resultado obtido: O sistema carregou corretamente e o painel inicial foi exibido em aproximadamente 1.5 segundos, sem apresentar erros no console do navegador.
+1. Acessar https://codecraft.devlook.xyz/.
+2. Aguardar o carregamento completo.
+3. Observar a tela inicial.
 
-Data/responsável: 23/11/2026 / Pedro
+**Resultado esperado:** O sistema deve carregar e apresentar o painel inicial sem erro inesperado.
 
-Status: Aprovado
+**Resultado obtido:** O sistema carregou corretamente e o painel inicial foi exibido em aproximadamente 1,5 segundos, sem apresentar erros no console do navegador.
 
-Evidência: evidencia_ct001_tela_inicial.png
+**Data:** 23/11/2026.
 
-CT002 — Atualização da página
-Funcionalidade: Navegação e carregamento
+**Responsável:** Pedro.
 
-Objetivo: Verificar se a aplicação continua acessível após atualizar a página.
+**Status:** Aprovado.
 
-Pré-condição: Sistema aberto.
+**Evidência:** evidencia_ct001_tela_inicial.png.
 
-Passos
-Acessar o sistema.
+### CT002 — Atualização da página
 
-Atualizar a página pelo navegador.
+**Funcionalidade:** Navegação e carregamento.
 
-Aguardar o carregamento.
+**Objetivo:** Verificar se a aplicação continua acessível após atualizar a página.
 
-Resultado esperado
-A aplicação deve carregar novamente sem apresentar tela quebrada ou erro inesperado.
+**Pré-condição:** Sistema aberto.
 
-Resultado obtido: A página foi recarregada utilizando a tecla F5. O painel continuou acessível e os widgets da tela principal foram renderizados novamente sem quebras de layout.
+**Passos:**
 
-Data/responsável: 23/11/2026 / João
+1. Acessar o sistema.
+2. Atualizar a página pelo navegador.
+3. Aguardar o carregamento.
 
-Status: Aprovado
+**Resultado esperado:** A aplicação deve carregar novamente sem apresentar tela quebrada ou erro inesperado.
 
-CT003 — Cadastro de produto com campos obrigatórios vazios
-Funcionalidade: Produtos
+**Resultado obtido:** A página foi recarregada utilizando a tecla F5. O painel continuou acessível e os widgets da tela principal foram renderizados novamente sem quebras de layout.
 
-Objetivo: Verificar a validação dos campos obrigatórios.
+**Data:** 23/11/2026.
 
-Pré-condição: Acesso à área de produtos.
+**Responsável:** João.
 
-Passos
-Abrir a área de produtos.
+**Status:** Aprovado.
 
-Iniciar um novo cadastro.
+## 3. Gerenciamento de produtos
 
-Deixar os campos obrigatórios vazios.
+### CT003 — Cadastro de produto com campos obrigatórios vazios
 
-Tentar salvar.
+**Funcionalidade:** Produtos.
 
-Resultado esperado
-O sistema deve impedir o cadastro e informar que os campos obrigatórios precisam ser preenchidos.
+**Objetivo:** Verificar a validação dos campos obrigatórios.
 
-Resultado obtido: Ao clicar no botão salvar com o formulário em branco, o sistema não submeteu os dados e destacou os campos de Nome e Código em vermelho com a mensagem "Este campo é obrigatório".
+**Pré-condição:** Acesso à área de produtos.
 
-Data/responsável: 23/11/2026 / Pedro
+**Passos:**
 
-Status: Aprovado
+1. Abrir a área de produtos.
+2. Iniciar um novo cadastro.
+3. Deixar os campos obrigatórios vazios.
+4. Tentar salvar.
 
-CT004 — Cadastro de produto com dados válidos
-Funcionalidade: Produtos
+**Resultado esperado:** O sistema deve impedir o cadastro e informar que os campos obrigatórios precisam ser preenchidos.
 
-Objetivo: Verificar se um produto pode ser cadastrado.
+**Resultado obtido:** Ao clicar no botão salvar com o formulário em branco, o sistema não submeteu os dados e destacou os campos de Nome e Código em vermelho com a mensagem "Este campo é obrigatório".
 
-Pré-condição: Acesso à área de produtos e código ainda não utilizado.
+**Data:** 23/11/2026.
 
-Passos
-Abrir a área de produtos.
+**Responsável:** Pedro.
 
-Iniciar um novo cadastro.
+**Status:** Aprovado.
 
-Preencher os campos obrigatórios com dados fictícios válidos.
+### CT004 — Cadastro de produto com dados válidos
 
-Salvar.
+**Funcionalidade:** Produtos.
 
-Localizar o produto cadastrado na listagem.
+**Objetivo:** Verificar se um produto pode ser cadastrado.
 
-Resultado esperado
-O produto deve ser salvo e aparecer na listagem com os dados informados.
+**Pré-condição:** Acesso à área de produtos e código ainda não utilizado.
 
-Resultado obtido: O produto "Válvula de Pressão V2" (Código: VAL-2026) foi salvo com sucesso. O registro apareceu imediatamente na primeira linha da grade de produtos, refletindo os dados inseridos.
+**Passos:**
 
-Data/responsável: 23/11/2026 / João
+1. Abrir a área de produtos.
+2. Iniciar um novo cadastro.
+3. Preencher os campos obrigatórios com dados fictícios válidos.
+4. Salvar.
+5. Localizar o produto cadastrado na listagem.
 
-Status: Aprovado
+**Resultado esperado:** O produto deve ser salvo e aparecer na listagem com os dados informados.
 
-CT005 — Desativação lógica de produto
-Funcionalidade: Produtos
+**Resultado obtido:** O produto "Válvula de Pressão V2" (Código: VAL-2026) foi salvo com sucesso. O registro apareceu imediatamente na primeira linha da grade de produtos, refletindo os dados inseridos.
 
-Objetivo: Verificar se um produto pode ser desativado sem apagar seu histórico.
+**Data:** 23/11/2026.
 
-Pré-condição: Produto fictício cadastrado; usuário com permissão.
+**Responsável:** João.
 
-Passos
-Abrir a área de produtos.
+**Status:** Aprovado.
 
-Localizar o produto de teste.
+### CT005 — Desativação lógica de produto
 
-Verificar as ações disponíveis para o registro.
+**Funcionalidade:** Produtos.
 
-Se houver ação de desativar, executá-la e confirmar.
+**Objetivo:** Verificar se um produto pode ser desativado sem apagar seu histórico.
 
-Verificar se o produto aparece como inativo ou deixa de ser oferecido para novos vínculos.
+**Pré-condição:** Produto fictício cadastrado; usuário com permissão.
 
-Resultado esperado
-O produto deve ser desativado conforme as regras do sistema, preservando referências e histórico. Não se espera exclusão física do registro.
+**Passos:**
 
-Resultado obtido: O produto "Válvula de Pressão V2" foi desativado através da chave seletora na listagem. A tag visual mudou para "Inativo" e o item deixou de aparecer nos menus suspensos para criação de novas inspeções, mas seu cadastro base continuou visível na tela de produtos (abaixo do filtro de inativos).
+1. Abrir a área de produtos.
+2. Localizar o produto de teste.
+3. Verificar as ações disponíveis para o registro.
+4. Se houver ação de desativar, executá-la e confirmar.
+5. Verificar se o produto aparece como inativo ou deixa de ser oferecido para novos vínculos.
 
-Data/responsável: 23/11/2026 / Pedro
+**Resultado esperado:** O produto deve ser desativado conforme as regras do sistema, preservando referências e histórico. Não se espera exclusão física do registro.
 
-Status: Aprovado
+**Resultado obtido:** O produto "Válvula de Pressão V2" foi desativado através da chave seletora na listagem. A tag visual mudou para "Inativo" e o item deixou de aparecer nos menus suspensos para criação de novas inspeções, mas seu cadastro base continuou visível na tela de produtos (abaixo do filtro de inativos).
 
-Observação: A desativação lógica está funcionando corretamente via menu de contexto (três pontos) de cada registro.
+**Data:** 23/11/2026.
 
-CT006 — Cadastro de inspetor
-Funcionalidade: Inspetores/contas
+**Responsável:** Pedro.
 
-Objetivo: Verificar o cadastro de um inspetor com dados fictícios válidos.
+**Status:** Aprovado.
 
-Pré-condição: Usuário com permissão de gerenciamento.
+**Observação:** A desativação lógica está funcionando corretamente via menu de contexto (três pontos) de cada registro.
 
-Passos
-Abrir a área de inspetores ou gerenciamento de contas.
+## 4. Gerenciamento de inspetores e contas
 
-Iniciar um novo cadastro.
+### CT006 — Cadastro de inspetor
 
-Preencher os campos obrigatórios com dados fictícios.
+**Funcionalidade:** Inspetores/contas.
 
-Salvar.
+**Objetivo:** Verificar o cadastro de um inspetor com dados fictícios válidos.
 
-Pesquisar o registro criado.
+**Pré-condição:** Usuário com permissão de gerenciamento.
 
-Resultado esperado
-O registro deve ser salvo e aparecer na listagem, respeitando as validações e permissões.
+**Passos:**
 
-Resultado obtido: O inspetor "Marcos Oliveira" (Matrícula: 10445) foi cadastrado. Ao pesquisar pelo nome ou matrícula na barra superior, o registro foi retornado corretamente na listagem de usuários com o perfil "Inspetor".
+1. Abrir a área de inspetores ou gerenciamento de contas.
+2. Iniciar um novo cadastro.
+3. Preencher os campos obrigatórios com dados fictícios.
+4. Salvar.
+5. Pesquisar o registro criado.
 
-Data/responsável: 23/11/2026 / João
+**Resultado esperado:** O registro deve ser salvo e aparecer na listagem, respeitando as validações e permissões.
 
-Status: Aprovado
+**Resultado obtido:** O inspetor "Marcos Oliveira" (Matrícula: 10445) foi cadastrado. Ao pesquisar pelo nome ou matrícula na barra superior, o registro foi retornado corretamente na listagem de usuários com o perfil "Inspetor".
 
-CT007 — Montagem de checklist com critérios
-Funcionalidade: Critérios e checklists
+**Data:** 23/11/2026.
 
-Objetivo: Verificar se é possível montar um checklist com critérios cadastrados.
+**Responsável:** João.
 
-Pré-condição: Existência de critérios ativos e permissão para gerenciar checklists.
+**Status:** Aprovado.
 
-Passos
-Abrir a área de checklists.
+## 5. Critérios e checklists
 
-Iniciar a criação de um checklist.
+### CT007 — Montagem de checklist com critérios
 
-Informar os dados obrigatórios.
+**Funcionalidade:** Critérios e checklists.
 
-Adicionar um ou mais critérios ativos.
+**Objetivo:** Verificar se é possível montar um checklist com critérios cadastrados.
 
-Salvar.
+**Pré-condição:** Existência de critérios ativos e permissão para gerenciar checklists.
 
-Consultar o checklist criado.
+**Passos:**
 
-Resultado esperado
-O checklist deve ser salvo com os critérios selecionados, sem duplicidade indevida.
+1. Abrir a área de checklists.
+2. Iniciar a criação de um checklist.
+3. Informar os dados obrigatórios.
+4. Adicionar um ou mais critérios ativos.
+5. Salvar.
+6. Consultar o checklist criado.
 
-Resultado obtido: Checklist "Inspeção Visual de Solda" criado e vinculado a 3 critérios pré-existentes. O salvamento ocorreu sem erros e, ao consultar o checklist, os 3 critérios estavam listados na ordem escolhida, sem duplicidades.
+**Resultado esperado:** O checklist deve ser salvo com os critérios selecionados, sem duplicidade indevida.
 
-Data/responsável: 23/11/2026 / Pedro
+**Resultado obtido:** Checklist "Inspeção Visual de Solda" criado e vinculado a 3 critérios pré-existentes. O salvamento ocorreu sem erros e, ao consultar o checklist, os 3 critérios estavam listados na ordem escolhida, sem duplicidades.
 
-Status: Aprovado
+**Data:** 23/11/2026.
 
-CT008 — Impedir abertura de inspeção com cadastro inativo
-Funcionalidade: Inspeções
+**Responsável:** Pedro.
 
-Objetivo: Verificar se cadastros inativos são impedidos de iniciar uma nova inspeção.
+**Status:** Aprovado.
 
-Pré-condição: Existência de produto, lote ou checklist inativo de teste.
+## 6. Realização de inspeções
 
-Passos
-Acessar a criação de inspeção.
+### CT008 — Impedir abertura de inspeção com cadastro inativo
 
-Tentar selecionar o cadastro inativo.
+**Funcionalidade:** Inspeções.
 
-Observar as opções disponíveis e a resposta do sistema.
+**Objetivo:** Verificar se cadastros inativos são impedidos de iniciar uma nova inspeção.
 
-Resultado esperado
-O sistema não deve permitir abrir uma inspeção utilizando produto, lote ou checklist inativo.
+**Pré-condição:** Existência de produto, lote ou checklist inativo de teste.
 
-Resultado obtido: Durante a criação de uma nova inspeção, o produto inativo ("Válvula de Pressão V2") não constava na listagem da caixa de seleção (dropdown), impossibilitando sua escolha.
+**Passos:**
 
-Data/responsável: 23/11/2026 / João
+1. Acessar a criação de inspeção.
+2. Tentar selecionar o cadastro inativo.
+3. Observar as opções disponíveis e a resposta do sistema.
 
-Status: Aprovado
+**Resultado esperado:** O sistema não deve permitir abrir uma inspeção utilizando produto, lote ou checklist inativo.
 
-CT009 — Impedir finalização de inspeção incompleta
-Funcionalidade: Inspeções
+**Resultado obtido:** Durante a criação de uma nova inspeção, o produto inativo ("Válvula de Pressão V2") não constava na listagem da caixa de seleção (dropdown), impossibilitando sua escolha.
 
-Objetivo: Verificar se o sistema impede finalizar uma inspeção sem responder aos itens obrigatórios.
+**Data:** 23/11/2026.
 
-Pré-condição: Lote e checklist ativos, com inspeção iniciada.
+**Responsável:** João.
 
-Passos
-Iniciar uma inspeção de teste.
+**Status:** Aprovado.
 
-Deixar pelo menos um item obrigatório sem resposta.
+### CT009 — Impedir finalização de inspeção incompleta
 
-Tentar finalizar a inspeção.
+**Funcionalidade:** Inspeções.
 
-Resultado esperado
-A inspeção não deve ser finalizada. O sistema deve indicar que existem respostas obrigatórias pendentes.
+**Objetivo:** Verificar se o sistema impede finalizar uma inspeção sem responder aos itens obrigatórios.
 
-Resultado obtido: Ao tentar clicar em "Concluir Inspeção" com o item "Verificação Dimensional" em branco, o sistema exibiu um modal de alerta com o texto "Existem 1 itens obrigatórios sem resposta" e abortou o encerramento.
+**Pré-condição:** Lote e checklist ativos, com inspeção iniciada.
 
-Data/responsável: 23/11/2026 / Pedro
+**Passos:**
 
-Status: Aprovado
+1. Iniciar uma inspeção de teste.
+2. Deixar pelo menos um item obrigatório sem resposta.
+3. Tentar finalizar a inspeção.
 
-CT010 — Registro de resposta não conforme
-Funcionalidade: Inspeções e não conformidades
+**Resultado esperado:** A inspeção não deve ser finalizada. O sistema deve indicar que existem respostas obrigatórias pendentes.
 
-Objetivo: Verificar se uma resposta não conforme exige o registro de uma não conformidade.
+**Resultado obtido:** Ao tentar clicar em "Concluir Inspeção" com o item "Verificação Dimensional" em branco, o sistema exibiu um modal de alerta com o texto "Existem 1 itens obrigatórios sem resposta" e abortou o encerramento.
 
-Pré-condição: Inspeção em andamento com checklist disponível.
+**Data:** 23/11/2026.
 
-Passos
-Abrir uma inspeção de teste.
+**Responsável:** Pedro.
 
-Marcar um critério como não conforme.
+**Status:** Aprovado.
 
-Tentar prosseguir sem registrar a não conformidade.
+### CT010 — Registro de resposta não conforme
 
-Observar a validação.
+**Funcionalidade:** Inspeções e não conformidades.
 
-Registrar a não conformidade conforme solicitado.
+**Objetivo:** Verificar se uma resposta não conforme exige o registro de uma não conformidade.
 
-Resultado esperado
-O sistema deve exigir uma não conformidade vinculada à resposta não conforme antes de permitir a conclusão do fluxo.
+**Pré-condição:** Inspeção em andamento com checklist disponível.
 
-Resultado obtido: O critério "Acabamento da superfície" foi marcado como "Reprovado". O sistema travou o fluxo de conclusão da inspeção e abriu compulsoriamente um slide lateral exigindo o preenchimento dos detalhes da falha. Após salvar a ocorrência, a conclusão foi liberada.
+**Passos:**
 
-Data/responsável: 23/11/2026 / João
+1. Abrir uma inspeção de teste.
+2. Marcar um critério como não conforme.
+3. Tentar prosseguir sem registrar a não conformidade.
+4. Observar a validação.
+5. Registrar a não conformidade conforme solicitado.
 
-Status: Aprovado
+**Resultado esperado:** O sistema deve exigir uma não conformidade vinculada à resposta não conforme antes de permitir a conclusão do fluxo.
 
-CT011 — Envio de evidência fotográfica válida
-Funcionalidade: Evidências
+**Resultado obtido:** O critério "Acabamento da superfície" foi marcado como "Reprovado". O sistema travou o fluxo de conclusão da inspeção e abriu compulsoriamente um slide lateral exigindo o preenchimento dos detalhes da falha. Após salvar a ocorrência, a conclusão foi liberada.
 
-Objetivo: Verificar o envio e a recuperação de uma imagem permitida.
+**Data:** 23/11/2026.
 
-Pré-condição: Não conformidade aberta e arquivo de teste JPEG, PNG ou WebP dentro do limite permitido.
+**Responsável:** João.
 
-Passos
-Abrir uma não conformidade de teste.
+**Status:** Aprovado.
 
-Acessar a área de evidências.
+## 7. Evidências fotográficas
 
-Selecionar uma imagem fictícia válida.
+### CT011 — Envio de evidência fotográfica válida
 
-Enviar o arquivo.
+**Funcionalidade:** Evidências.
 
-Consultar ou abrir a evidência enviada.
+**Objetivo:** Verificar o envio e a recuperação de uma imagem permitida.
 
-Resultado esperado
-O sistema deve aceitar o arquivo válido e permitir sua consulta por usuário autorizado.
+**Pré-condição:** Não conformidade aberta e arquivo de teste JPEG, PNG ou WebP dentro do limite permitido.
 
-Resultado obtido: O upload do arquivo falha_pintura.jpg (1.4 MB) ocorreu com sucesso em 2 segundos. A miniatura carregou imediatamente na galeria de evidências e abriu no modo de visualização ampliada ao ser clicada.
+**Passos:**
 
-Data/responsável: 23/11/2026 / Pedro
+1. Abrir uma não conformidade de teste.
+2. Acessar a área de evidências.
+3. Selecionar uma imagem fictícia válida.
+4. Enviar o arquivo.
+5. Consultar ou abrir a evidência enviada.
 
-Status: Aprovado
+**Resultado esperado:** O sistema deve aceitar o arquivo válido e permitir sua consulta por usuário autorizado.
 
-CT012 — Rejeição de arquivo inválido como evidência
-Funcionalidade: Evidências
+**Resultado obtido:** O upload do arquivo falha_pintura.jpg (1,4 MB) ocorreu com sucesso em 2 segundos. A miniatura carregou imediatamente na galeria de evidências e abriu no modo de visualização ampliada ao ser clicada.
 
-Objetivo: Verificar se arquivos não permitidos são recusados.
+**Data:** 23/11/2026.
 
-Pré-condição: Não conformidade de teste e arquivo que não seja uma imagem permitida.
+**Responsável:** Pedro.
 
-Passos
-Abrir uma não conformidade de teste.
+**Status:** Aprovado.
 
-Acessar a área de evidências.
+### CT012 — Rejeição de arquivo inválido como evidência
 
-Tentar enviar um arquivo de texto ou outro formato não permitido.
+**Funcionalidade:** Evidências.
 
-Observar a resposta do sistema.
+**Objetivo:** Verificar se arquivos não permitidos são recusados.
 
-Resultado esperado
-O sistema deve recusar o arquivo e apresentar uma mensagem de validação, sem armazená-lo como evidência válida.
+**Pré-condição:** Não conformidade de teste e arquivo que não seja uma imagem permitida.
 
-Resultado obtido: Foi tentado o envio do arquivo relatorio_tecnico.pdf. O sistema recusou o arquivo e exibiu um toast de erro nativo informando "Formato inválido. Os tipos aceitos são JPEG, PNG ou WebP". O arquivo não foi anexado.
+**Passos:**
 
-Data/responsável: 23/11/2026 / João
+1. Abrir uma não conformidade de teste.
+2. Acessar a área de evidências.
+3. Tentar enviar um arquivo de texto ou outro formato não permitido.
+4. Observar a resposta do sistema.
 
-Status: Aprovado
+**Resultado esperado:** O sistema deve recusar o arquivo e apresentar uma mensagem de validação, sem armazená-lo como evidência válida.
 
-CT013 — Consulta de histórico e aplicação de filtros
-Funcionalidade: Histórico e relatórios
+**Resultado obtido:** Foi tentado o envio do arquivo relatorio_tecnico.pdf. O sistema recusou o arquivo e exibiu um toast de erro nativo informando "Formato inválido. Os tipos aceitos são JPEG, PNG ou WebP". O arquivo não foi anexado.
 
-Objetivo: Verificar se os filtros retornam registros compatíveis com os critérios selecionados.
+**Data:** 23/11/2026.
 
-Pré-condição: Existência de registros fictícios que permitam comparar os resultados.
+**Responsável:** João.
 
-Passos
-Abrir o histórico ou a área de relatórios.
+**Status:** Aprovado.
 
-Consultar os registros sem filtros.
+## 8. Histórico e relatórios
 
-Aplicar um filtro disponível, como lote ou período.
+### CT013 — Consulta de histórico e aplicação de filtros
 
-Comparar os registros apresentados com o filtro aplicado.
+**Funcionalidade:** Histórico e relatórios.
 
-Remover o filtro e verificar o retorno da listagem.
+**Objetivo:** Verificar se os filtros retornam registros compatíveis com os critérios selecionados.
 
-Resultado esperado
-A listagem deve respeitar os filtros e apresentar resultados coerentes com os dados cadastrados.
+**Pré-condição:** Existência de registros fictícios que permitam comparar os resultados.
 
-Resultado obtido: Aplicado filtro de data "01/11/2026 a 15/11/2026". A tela atualizou para mostrar 12 registros correspondentes a este intervalo. Ao limpar o filtro no ícone "X", a listagem completa (45 registros totais) foi novamente apresentada.
+**Passos:**
 
-Data/responsável: 23/11/2026 / Pedro
+1. Abrir o histórico ou a área de relatórios.
+2. Consultar os registros sem filtros.
+3. Aplicar um filtro disponível, como lote ou período.
+4. Comparar os registros apresentados com o filtro aplicado.
+5. Remover o filtro e verificar o retorno da listagem.
 
-Status: Aprovado
+**Resultado esperado:** A listagem deve respeitar os filtros e apresentar resultados coerentes com os dados cadastrados.
 
-CT014 — Exportação de relatório em CSV
-Funcionalidade: Relatórios
+**Resultado obtido:** Aplicado filtro de data "01/11/2026 a 15/11/2026". A tela atualizou para mostrar 12 registros correspondentes a este intervalo. Ao limpar o filtro no ícone "X", a listagem completa (45 registros totais) foi novamente apresentada.
 
-Objetivo: Verificar se a exportação gera um arquivo CSV legível e coerente com a consulta.
+**Data:** 23/11/2026.
 
-Pré-condição: Existência de registros de teste.
+**Responsável:** Pedro.
 
-Passos
-Abrir a área de relatórios.
+**Status:** Aprovado.
 
-Aplicar um filtro, se necessário.
+### CT014 — Exportação de relatório em CSV
 
-Solicitar a exportação CSV.
+**Funcionalidade:** Relatórios.
 
-Abrir o arquivo gerado em um editor de planilhas ou texto.
+**Objetivo:** Verificar se a exportação gera um arquivo CSV legível e coerente com a consulta.
 
-Conferir cabeçalhos e dados.
+**Pré-condição:** Existência de registros de teste.
 
-Resultado esperado
-O arquivo deve ser gerado, apresentar colunas e registros coerentes com a consulta e não conter dados de outros filtros.
+**Passos:**
 
-Resultado obtido: O arquivo relatorio.csv foi baixado com sucesso, porém, as colunas de "Data de Criação" e "Responsável" não respeitaram o delimitador padrão (ponto e vírgula), aglutinando as informações na mesma célula no Excel, dificultando a leitura.
+1. Abrir a área de relatórios.
+2. Aplicar um filtro, se necessário.
+3. Solicitar a exportação CSV.
+4. Abrir o arquivo gerado em um editor de planilhas ou texto.
+5. Conferir cabeçalhos e dados.
 
-Data/responsável: 23/11/2026 / João
+**Resultado esperado:** O arquivo deve ser gerado, apresentar colunas e registros coerentes com a consulta e não conter dados de outros filtros.
 
-Status: Reprovado
+**Resultado obtido:** O arquivo relatorio.csv foi baixado com sucesso, porém, as colunas de "Data de Criação" e "Responsável" não respeitaram o delimitador padrão (ponto e vírgula), aglutinando as informações na mesma célula no Excel, dificultando a leitura.
 
-Evidência: bug_ct014_csv_delimitador_falho.png (Task criada para o time de desenvolvimento backend).
+**Data:** 23/11/2026.
 
-CT015 — Responsividade em tela estreita
-Funcionalidade: Interface responsiva
+**Responsável:** João.
 
-Objetivo: Verificar se a aplicação pode ser utilizada em uma tela de celular.
+**Status:** Reprovado.
 
-Pré-condição: Acesso ao sistema por celular ou ferramenta de emulação do navegador.
+**Evidência:** bug_ct014_csv_delimitador_falho.png.
 
-Passos
-Abrir o sistema em uma largura aproximada de 390 pixels.
+**Observação:** Foi identificada uma falha na formatação do arquivo CSV. Uma tarefa foi criada para a equipe de desenvolvimento backend realizar a correção.
 
-Navegar pelo painel.
+## 9. Interface e responsividade
 
-Abrir listagens e formulários.
+### CT015 — Responsividade em tela estreita
 
-Observar menus, tabelas, botões e campos.
+**Funcionalidade:** Interface responsiva.
 
-Resultado esperado
-O conteúdo deve permanecer utilizável, sem cortes ou rolagem horizontal indevida da página. Menus, tabelas e formulários devem permitir interação.
+**Objetivo:** Verificar se a aplicação pode ser utilizada em uma tela de celular.
 
-Resultado obtido: Teste realizado com o Chrome DevTools, emulando um iPhone 12 Pro (390px de largura). O menu lateral foi devidamente oculto, trocado pelo ícone hambúrguer. A tabela da dashboard inseriu scroll horizontal interno em seu componente, não quebrando a página geral. Totalmente utilizável.
+**Pré-condição:** Acesso ao sistema por celular ou ferramenta de emulação do navegador.
 
-Data/responsável: 23/11/2026 / Pedro
+**Passos:**
 
-Status: Aprovado
+1. Abrir o sistema em uma largura aproximada de 390 pixels.
+2. Navegar pelo painel.
+3. Abrir listagens e formulários.
+4. Observar menus, tabelas, botões e campos.
 
-CT016 — Consulta de não conformidade após tratamento
-Funcionalidade: Não conformidades
+**Resultado esperado:** O conteúdo deve permanecer utilizável, sem cortes ou rolagem horizontal indevida da página. Menus, tabelas e formulários devem permitir interação.
 
-Objetivo: Verificar se o histórico de tratamento permanece disponível.
+**Resultado obtido:** Teste realizado com o Chrome DevTools, emulando um iPhone 12 Pro (390px de largura). O menu lateral foi devidamente oculto, trocado pelo ícone hambúrguer. A tabela da dashboard inseriu scroll horizontal interno em seu componente, não quebrando a página geral. Totalmente utilizável.
 
-Pré-condição: Não conformidade de teste com possibilidade de atualização de status.
+**Data:** 23/11/2026.
 
-Passos
-Abrir uma não conformidade de teste.
+**Responsável:** Pedro.
 
-Atualizar seu status seguindo as transições permitidas.
+**Status:** Aprovado.
 
-Consultar novamente o registro.
+## 10. Não conformidades
 
-Verificar o histórico de alterações.
+### CT016 — Consulta de não conformidade após tratamento
 
-Resultado esperado
-O status deve ser atualizado conforme as transições permitidas e o histórico deve registrar as alterações realizadas.
+**Funcionalidade:** Não conformidades.
 
-Resultado obtido: A não conformidade (NC-109) foi avançada de "Em Análise" para "Resolvida". Ao recarregar a visualização do registro, a aba "Histórico de Movimentações" listou a mudança, detalhando a hora exata da transição e o nome do usuário responsável pela ação.
+**Objetivo:** Verificar se o histórico de tratamento permanece disponível.
 
-Data/responsável: 23/11/2026 / João
+**Pré-condição:** Não conformidade de teste com possibilidade de atualização de status.
 
-Status: Aprovado
+**Passos:**
 
-Observação sobre autenticação
-A versão publicada descrita no README abre diretamente no painel, sem tela de login. Por isso, CT001 e CT002 verificam o acesso inicial e o recarregamento da aplicação. Testes de credenciais, logout e permissões pela interface devem ser adicionados quando a tela de autenticação estiver disponível. As regras do backend podem ser validadas separadamente pela equipe técnica.
+1. Abrir uma não conformidade de teste.
+2. Atualizar seu status seguindo as transições permitidas.
+3. Consultar novamente o registro.
+4. Verificar o histórico de alterações.
+
+**Resultado esperado:** O status deve ser atualizado conforme as transições permitidas e o histórico deve registrar as alterações realizadas.
+
+**Resultado obtido:** A não conformidade (NC-109) foi avançada de "Em Análise" para "Resolvida". Ao recarregar a visualização do registro, a aba "Histórico de Movimentações" listou a mudança, detalhando a hora exata da transição e o nome do usuário responsável pela ação.
+
+**Data:** 23/11/2026.
+
+**Responsável:** João.
+
+**Status:** Aprovado.
+
+## 11. Observações sobre autenticação
+
+A versão publicada descrita no README abre diretamente no painel, sem tela de login.
+
+Por esse motivo, os casos CT001 e CT002 verificam o acesso inicial e o recarregamento da aplicação.
+
+Os testes de credenciais, logout e permissões pela interface devem ser adicionados quando a tela de autenticação estiver disponível.
+
+As regras do backend podem ser validadas separadamente pela equipe técnica.
+
+## 12. Considerações finais
+
+Os casos de teste apresentados neste documento abrangem as principais funcionalidades do Sistema Inteligente de Controle de Qualidade, incluindo acesso, gerenciamento de produtos, cadastro de inspetores, checklists, inspeções, evidências, histórico, relatórios e responsividade.
+
+Durante os testes, foi identificada uma falha na exportação CSV (CT014), relacionada à separação das colunas no arquivo gerado. Os demais casos apresentados obtiveram resultados aprovados.
+
+Este documento deve ser atualizado sempre que novos testes forem realizados, funcionalidades forem modificadas ou falhas forem corrigidas.
