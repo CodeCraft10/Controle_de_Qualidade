@@ -1,67 +1,76 @@
-# Registro de Bugs
+### BUG001 — Mensagem de erro não apresentada ao preencher formulário incorretamente
 
-Este documento reúne os problemas encontrados durante
-os testes do sistema.
+- **Data:** 17/11/26
+- **Funcionalidade:** Cadastro de Produtos
+- **Caso relacionado:** CT003
+- **Gravidade:** Baixa
+- **Responsável pela correção:** João
+- **Status:** Resolvido
 
-## BUG001 - Exemplo de registro
+#### Descrição
+Possibilidade de o sistema não apresentar uma mensagem clara quando o usuário tenta cadastrar um produto sem preencher os campos obrigatórios.
 
-- Data: [preencher]
-- Funcionalidade: [preencher]
-- Gravidade: [baixa, média ou alta]
-- Responsável pela correção: [preencher]
+#### Resultado esperado
+O sistema deve impedir o cadastro e informar quais campos precisam ser preenchidos.
 
-### Descrição
-Descrever o problema encontrado.
-
-### Passos para reproduzir
-1. [Primeiro passo]
-2. [Segundo passo]
-3. [Terceiro passo]
-
-### Resultado esperado
-Descrever o comportamento correto.
-
-### Resultado obtido
-Descrever o comportamento que realmente aconteceu.
-
-### Status
-Aberto.
-
-### Evidências
-Adicionar imagem ou captura de tela, se disponível.
+#### Resultado obtido
+O cadatro do sistema só é completo se todos os campos estiverem preenchidos.
 
 ---
 
-## Resumo dos problemas
+### BUG002 — Filtro de registros não atualiza os resultados
 
-| Identificação | Problema | Gravidade | Status |
-|---|---|---|---|
-| BUG001 | Exemplo | Média | Aberto |
+- **Data:** 17/11/26
+- **Funcionalidade:** Consulta de Produtos
+- **Caso relacionado:** CT013
+- **Gravidade:** Média
+- **Responsável pela correção:** João
+- **Status:** Resolvido
 
----------------------------------------------------
+#### Descrição
+Possibilidade de o filtro de pesquisa não atualizar corretamente a lista de produtos após a aplicação de um critério de busca.
 
-## BUG001 — Ausência de opção para excluir registros
+#### Resultado esperado
+A lista deve apresentar somente os registros correspondentes ao filtro selecionado.
 
-- **Funcionalidades:** Produtos, Inspetores, Critérios e Checklists.
-- **Gravidade:** A definir.
-- **Status:** Em análise.
+#### Resultado obtido
+A lista está atualizada com resultados.
+---
 
-### Descrição
-Não foi identificada uma opção ou botão para excluir registros nas áreas de Produtos, Inspetores, Critérios e Checklists.
+### BUG003 — Sistema permite finalizar inspeção incompleta
 
-### Passos para reproduzir
-1. Acessar a área de Produtos.
-2. Verificar as opções disponíveis para os registros.
-3. Repetir o procedimento nas áreas de Inspetores, Critérios e Checklists.
+- **Data:** 17/11/26
+- **Funcionalidade:** Inspeções
+- **Caso relacionado:** CT009
+- **Gravidade:** Alta
+- **Responsável pela correção:** João
+- **Status:** Resolvido
 
-### Resultado esperado
-Verificar se existe uma funcionalidade prevista para excluir ou desativar registros.
+#### Descrição
+Possibilidade de o sistema permitir a finalização de uma inspeção mesmo quando existem critérios obrigatórios sem resposta.
 
-### Resultado obtido
-Não foi localizado um botão de exclusão nas quatro áreas avaliadas.
+#### Resultado esperado
+O sistema deve impedir a finalização enquanto houver respostas obrigatórias pendentes.
 
-### Evidências
-Adicionar capturas de tela das quatro áreas.
+#### Resultado obtido
+Agora o sistema só permite a finalização se a inspeção estiver completa.
 
-### Observação
-A necessidade de exclusão deve ser confirmada com os requisitos do projeto e com a equipe de desenvolvimento.
+---
+
+### BUG004 — Arquivo de evidência inválido é aceito
+
+- **Data:** 18/11/26
+- **Funcionalidade:** Envio de evidências
+- **Caso relacionado:** CT012
+- **Gravidade:** Média
+- **Responsável pela correção:** João
+- **Status:** Resolvido
+
+#### Descrição
+Possibilidade de o sistema aceitar arquivos em formatos não permitidos durante o envio de evidências de uma inspeção.
+
+#### Resultado esperado
+O sistema deve rejeitar arquivos que não atendam aos formatos e limites definidos nas regras do projeto.
+
+#### Resultado obtido
+Após o bug ser corrigido, o envio de evidências aceita os arquivos.
