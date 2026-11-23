@@ -68,20 +68,14 @@ Tipos de teste:
 
 ## 5. Ambiente de testes
 
-Preencher antes de cada rodada:
-
 | Item | Ambiente utilizado |
 |---|---|
 | URL | https://codecraft.devlook.xyz/ |
-| Sistema operacional | A preencher |
-| Navegador e versão | A preencher |
-| Resolução desktop | A preencher |
-| Resolução mobile/emulação | A preencher |
-| Persistência | MySQL ou JSON — confirmar |
-| Data da execução | A preencher |
-| Versão/commit avaliado | A preencher |
-
-**Importante:** utilizar somente dados fictícios no ambiente compartilhado de demonstração. Não inserir senhas, dados pessoais ou informações reais.
+| Sistema operacional | Windows |
+| Navegador | Google Chrome |
+| Resolução desktop | Resolução da tela do computador, por exemplo, 1920 × 1080 |
+| Resolução mobile/emulação | Modelo do celular ou resolução emulada, por exemplo, 390 × 844 |
+| Persistência | MySQL |
 
 ## 6. Critérios de entrada
 
