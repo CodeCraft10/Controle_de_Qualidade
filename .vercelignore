@@ -1,0 +1,17 @@
+
+.git/
+.env*
+**/.env*
+backend/
+deploy/
+public/
+web/
+backups/
+work/
+output/
+**/node_modules/
+**/dist/
+**/.e2e/
+**/test-results/
+**/playwright-report/
+**/*.log
