@@ -1,7 +1,10 @@
+
 .git
 **/node_modules
 **/dist
-**/.env
+**/.env*
+!**/.env.example
+**/.vercel
 **/.e2e
 **/test-results
 **/playwright-report
@@ -9,3 +12,4 @@ backend/var/*
 !backend/var/.gitkeep
 work
 output
+backups/
