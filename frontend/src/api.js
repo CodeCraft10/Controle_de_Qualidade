@@ -42,7 +42,7 @@ async function send(path, options = {}, asBlob = false) {
       body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
       signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
       cache: 'no-store',
-      credentials: 'omit',
+      credentials: 'same-origin',
     });
   } catch (error) {
     if (signal?.aborted) throw error;

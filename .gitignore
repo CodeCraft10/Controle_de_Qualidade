@@ -8,3 +8,6 @@ playwright-report/
 *.log
 
 backups/
+.vercel
+.env*
+!.env.example

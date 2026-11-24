@@ -6,7 +6,11 @@ COPY frontend/ ./
 RUN npm run build
 
 FROM php:8.4-apache
-RUN a2enmod rewrite headers && docker-php-ext-install pdo_mysql
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libpq-dev \
+    && a2enmod rewrite headers \
+    && docker-php-ext-install pdo_mysql pdo_pgsql \
+    && rm -rf /var/lib/apt/lists/*
 COPY deploy/apache.conf /etc/apache2/sites-available/000-default.conf
 COPY deploy/php.ini /usr/local/etc/php/conf.d/gp4.ini
 COPY backend/ /var/www/html/backend/
