@@ -1,0 +1,10 @@
+
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://controle-de-qualidade-2mkq.onrender.com/api/:path*"
+    }
+  ]
+}
